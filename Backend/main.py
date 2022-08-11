@@ -14,7 +14,8 @@ from matplotlib.dates import DateFormatter
 from matplotlib.ticker import MaxNLocator
 from sqlalchemy import true
 #V2IMPORTS
-from flask_security import Security,SQLAlchemySessionUserDatastore,utils
+from flask_security import Security,SQLAlchemyUserDatastore,utils
+from flask_cors import CORS
 
 #app initialization
 app = Flask(__name__)
@@ -40,9 +41,10 @@ login_manager.init_app(app)
 #database import
 from database import *
 
-user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
-security = Security(app, user_datastore)
 
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
+CORS(app);
 #==============================Business Logic====================================
 #------------Login-Logout-------------
 @login_manager.user_loader
@@ -74,7 +76,7 @@ def signup():
         passd=request.form.get('password')
         if uname not in [i.username for i in User.query.all()]:
             # user=User(username=uname,password=passd,fs_uniquifier=bcrypt.gensalt())
-            user_datastore.create_user(username=uname,email=uname+'@gmail.com', password=passd, active=1)
+            user_datastore.create_user(username=uname,email=uname+'@gmail.com', password=utils.hash_password(passd), active=1)
             # db.session.add(user)
             db.session.commit()
             return login()
@@ -102,7 +104,7 @@ def main():
 def add_tracker():
     if request.method=='POST':
         try:
-            u_id=current_user.get_id()
+            u_id=current_user.get('id')
             print(u_id)
             name=request.form.get('name')
             desc=request.form.get('desc')
@@ -316,4 +318,4 @@ def delete_log(log_id):
 #====================================================================================
 #app run
 if __name__=='__main__':
-    app.run(host='0.0.0.0',debug=true)
+    app.run(host='0.0.0.0',port=5000,debug=true)

@@ -2,6 +2,7 @@ from flask import redirect, render_template, request
 from flask_restful  import Resource,fields,marshal_with,marshal
 from flask_login import login_required
 from database import User,tracker,log,db
+import bcrypt
 #------------output fields-----------------
 user_fields={
     "user_id":fields.String(attribute='id'),
@@ -71,7 +72,7 @@ class UserApi(Resource):
                     return "Modified Username is invalid",400
                 elif not pass_valid:
                     return "Modified Password is invalid",400
-                
+
             return self.get(modified_username)
         except:
             return "Internal Server Error",500
@@ -93,7 +94,7 @@ class UserApi(Resource):
             data=request.json
             if data:
                 if username_valid(data['username']) and password_valid(data['password']):
-                    new_user=User(username=str(data['username']),password=str(data['password']))
+                    new_user=User(username=str(data['username']),password=str(data['password']),fs_uniquifier=bcrypt.gensalt())
                     db.session.add(new_user)
                     db.session.commit()
                 elif not username_valid(data['username']):
@@ -101,7 +102,7 @@ class UserApi(Resource):
                 elif not password_valid(data['password']):
                     return "Password is invalid",400
             return self.get(data['username'])
-        except:
+        except Exception as e:
             return "Internal Server Error",500
 
 class TrackerApi(Resource):
@@ -114,7 +115,7 @@ class TrackerApi(Resource):
             return marshal(trk,tracker_fields)
         except:
             return "Internal Server Error",500
-    
+
     def post(self):
         try:
             tdata=request.json
@@ -190,7 +191,4 @@ class LogApi(Resource):
         pass
     def post(self):
         pass
-#===========Api===========        
-            
-        
-
+#===========Api===========
