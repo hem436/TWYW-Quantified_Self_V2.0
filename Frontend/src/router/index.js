@@ -1,20 +1,24 @@
 import Vue from 'vue'
-import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import VueRouter from 'vue-router'
 
-Vue.use(Router)
+Vue.use(VueRouter)
 
-export default new Router({
-  mode:'history',
-  routes: [
-    {
+const routes = [
+  {
+    path: '/about',
+    name: 'about',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+  },{
       path: '/dashboard',
       component: ()=>import('@/components/dash/DashIndex'),
       children: [
       {
         path: '/',
         name: 'dash.home',
-        component: () => import('@/components/dash/Home'),
+        component: () => import('@/components/dash/DashHome'),
         meta: {
           title: 'Home Dashboard',
         }
@@ -23,12 +27,19 @@ export default new Router({
     {
       path: '/login',
       name: 'Login',
-      component: ()=>import('@/components/Login')
+      component: ()=>import('@/components/LogIn')
     },
     {
       path: '/signup',
       name: 'signup',
-      component: ()=>import('@/components/Signup')
+      component: ()=>import('@/components/SignUp')
     }
-  ]
+]
+
+const router = new VueRouter({
+  mode: 'history',
+  base: process.env.BASE_URL,
+  routes
 })
+
+export default router
