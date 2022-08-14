@@ -6,7 +6,7 @@ from datetime import datetime
 import bcrypt
 from flask import Flask, flash, redirect, render_template, request
 from flask_login import LoginManager
-from flask_security import login_required,login_user,current_user,logout_user
+from flask_security import login_required,login_user,current_user,logout_user,auth_required
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from matplotlib import pyplot as plt
@@ -14,18 +14,22 @@ from matplotlib.dates import DateFormatter
 from matplotlib.ticker import MaxNLocator
 from sqlalchemy import true
 #V2IMPORTS
-from flask_security import Security,SQLAlchemyUserDatastore,utils
+from flask_security import Security,SQLAlchemyUserDatastore,hash_password,verify_password
 from flask_cors import CORS
 
 #app initialization
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///quantified_self_database.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
-app.config['SECRET_KEY']='myappquantified'
+app.config['SECRET_KEY']='myappquantifie'
 
 app.config['SECURITY_USERNAME_ENABLE']=True
+app.config['SECURITY_TOKEN_AUTHENTICATION_HEADER']="A-T"
+app.config['SECURITY_TOKEN_MAX_AGE']=3600
 app.config['SECURITY_PASSWORD_SALT']='secret'
-
+app.config['WTF_CSRF_ENABLED'] = False
+app.config['CORS_SUPPORTS_CREDENTIALS']=True
+app.config['CORS_EXPOSE_HEADERS']='A-T'
 
 api= Api(app)
 app.app_context().push()
@@ -33,6 +37,7 @@ app.app_context().push()
 from static.api import *
 api.add_resource(UserApi,'/api/user/<string:username>','/api/user')
 api.add_resource(TrackerApi,'/api/tracker/<int:tracker_id>','/api/tracker')
+api.add_resource(LoginApi,'/api/login')
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -42,7 +47,6 @@ login_manager.init_app(app)
 from database import *
 
 
-user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
 CORS(app);
 #==============================Business Logic====================================
@@ -58,7 +62,9 @@ def login():
         uname=request.form.get('username')
         passd=request.form.get('password')
         try:
-            user=User.query.filter(User.username==uname,User.password==passd).one()
+
+            user=User.query.filter(User.username==uname).one()
+            print(verify_password(passd,user.password))
         except Exception as e:
             print(e)
             return render_template('login.html',error='incorrect password or username')
@@ -76,7 +82,7 @@ def signup():
         passd=request.form.get('password')
         if uname not in [i.username for i in User.query.all()]:
             # user=User(username=uname,password=passd,fs_uniquifier=bcrypt.gensalt())
-            user_datastore.create_user(username=uname,email=uname+'@gmail.com', password=utils.hash_password(passd), active=1)
+            user_datastore.create_user(username=uname,email=uname+'@gmail.com', password=hash_password(passd))
             # db.session.add(user)
             db.session.commit()
             return login()

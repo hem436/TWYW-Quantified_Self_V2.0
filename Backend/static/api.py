@@ -1,9 +1,10 @@
 from flask import redirect, render_template, request
 from flask_restful  import Resource,fields,marshal_with,marshal
-from flask_login import login_required
-from database import User,tracker,log,db
+from flask_security import auth_token_required,hash_password,login_user,verify_password
+from database import User,tracker,log,user_datastore,db
 import bcrypt
 #------------output fields-----------------
+
 user_fields={
     "user_id":fields.String(attribute='id'),
     "username":fields.String,
@@ -32,25 +33,53 @@ def tracker_name_valid(tname):
 def tracker_type_valid(ttype):
     b= ttype in ("Integer","Numeric","Multi-choice","Time")
     return b
-#---------API-----------
-class UserApi(Resource):
 
-    def get(self,username):
+
+#---------API-----------
+class LoginApi(Resource):
+    def get(self):
+        pass
+    def post(self):
         try:
+            loginuser=request.json
+            print(loginuser)
+            username=loginuser["username"]
+            pwd=loginuser["password"]
+            user_valid=username and username.isalnum()
+            pass_valid=pwd and password_valid(pwd)
+            if user_valid and pass_valid:
+                if (username,) in db.session.query(User.username).all():
+                    dbuser=User.query.filter(User.username==username).first()
+                    if verify_password(pwd,dbuser.password):
+                        print(login_user(dbuser,remember=True,authn_via=["password"]))
+                        return {**marshal(dbuser,user_fields),"auth_token":dbuser.get_auth_token()},200
+                    else:
+                        print("invalid_password")
+                else:
+                    print("user not found")
+        except Exception as e:
+            print(e)
+
+class UserApi(Resource):
+    @auth_token_required
+    def get(self,username):
+        # try:
             if username=="*":
                 user=User.query.all()
             elif " " not in username:
-                user=User.query.filter(User.username==username).all()
+                user=User.query.filter(User.username==username).first()
             else:
-                user=[]
+                return "invalid user",400
             #print(user) #debug print
-            if user != []:
-                return [marshal(i,user_fields) for i in user]
+            if user != None:
+                # print({*user,user.get_auth_token()})
+                return marshal(user,user_fields),200
             else:
                 return "User not found",404
-        except:
+        # except:
             return "Internal Server Error",500
 
+    @auth_token_required
     def put(self,username):
         try:
             newdata=request.json
@@ -72,11 +101,11 @@ class UserApi(Resource):
                     return "Modified Username is invalid",400
                 elif not pass_valid:
                     return "Modified Password is invalid",400
-
             return self.get(modified_username)
         except:
             return "Internal Server Error",500
 
+    @auth_token_required
     def delete(self,username):
         try:
             user=User.query.filter(User.username==username).first()
@@ -94,19 +123,22 @@ class UserApi(Resource):
             data=request.json
             if data:
                 if username_valid(data['username']) and password_valid(data['password']):
-                    new_user=User(username=str(data['username']),password=str(data['password']),fs_uniquifier=bcrypt.gensalt())
-                    db.session.add(new_user)
+                    # db.session.add(new_user)
+                    user_datastore.create_user(username=str(data['username']),email=str(data['username'])+"@gmail.com",password=hash_password(data['password']))
+                    dbuser=user_datastore.find_user(username=str(data['username']))
+                    login_user(dbuser)
                     db.session.commit()
                 elif not username_valid(data['username']):
                     return "Username is invalid",400
                 elif not password_valid(data['password']):
                     return "Password is invalid",400
-            return self.get(data['username'])
+            return {**marshal(dbuser,user_fields),"auth_token":dbuser.get_auth_token()},200
         except Exception as e:
             return "Internal Server Error",500
 
 class TrackerApi(Resource):
 
+    @auth_token_required
     def get(self,tracker_id):
         try:
             trk=tracker.query.get(tracker_id)
@@ -116,6 +148,7 @@ class TrackerApi(Resource):
         except:
             return "Internal Server Error",500
 
+    @auth_token_required
     def post(self):
         try:
             tdata=request.json
@@ -142,6 +175,7 @@ class TrackerApi(Resource):
         except:
             return "Internal Server Error",500
 
+    @auth_token_required
     def put(self,tracker_id):
         try:
             pdata=request.json
@@ -174,7 +208,7 @@ class TrackerApi(Resource):
             return "Internal Server Error",500
 
 
-
+    @auth_token_required
     def delete(self,tracker_id):
         tobj=tracker.query.get(tracker_id)
         tlogs=log.query.filter(log.tracker_id==tracker_id).all()
@@ -183,12 +217,16 @@ class TrackerApi(Resource):
         return "OK",200
 
 class LogApi(Resource):
+    @auth_token_required
     def get(self,log_id):
         pass
+    @auth_token_required
     def put(self,log_id):
         pass
+    @auth_token_required
     def delete(self,log_id):
         pass
+    @auth_token_required
     def post(self):
         pass
 #===========Api===========

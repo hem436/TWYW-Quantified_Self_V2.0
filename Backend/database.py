@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import current_app
-from flask_security import UserMixin,RoleMixin
+from flask_security import UserMixin,RoleMixin,SQLAlchemyUserDatastore
 from flask_sqlalchemy import SQLAlchemy
 app=current_app
 db=SQLAlchemy(app)
@@ -43,4 +43,4 @@ class log(db.Model):
     note=db.Column(db.String)
     log_value=db.Column(db.String,nullable=False)
 
-db.create_all()
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
