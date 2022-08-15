@@ -110,7 +110,7 @@ def main():
 def add_tracker():
     if request.method=='POST':
         try:
-            u_id=current_user.get('id')
+            u_id=current_user.id
             print(u_id)
             name=request.form.get('name')
             desc=request.form.get('desc')
@@ -201,7 +201,7 @@ def view_tl(tracker_id):
             img=""
         return render_template('tracker.html',tracker=t,chart=img,filename=filename)
   except Exception as e:
-      print("e")
+      print(e)
       return(main())
 
 
