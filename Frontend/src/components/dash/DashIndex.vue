@@ -1,7 +1,7 @@
 <template>
 <div id="dash container-fluid">
-	<div class="row">
-		<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="height:100% ;background-color:#0dcaf0 ">
+	<div class="row d-flex">
+		<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="background-color:#0dcaf0 ">
 			<div class="flex-shrink-0 " style="background-color:#a3eeff">
 				<a href="/" class="d-flex align-items-center pt-3 pb-2 mb-3 link-dark text-decoration-none border-bottom">
 					<svg class="bi me-2" width="30" height="24">
@@ -81,27 +81,7 @@
 				</div>
 			</div>
 			<button type="button" name="button" @click="req('hem')">query</button>
-			{{info}}sadflkjasl fsdaknajskljfklas sdkfjlasfkdfj dsflsajdlfkjlsjadf djsklfjlaksjlfjdas fkjdslafgjldajfgl fklsjfdlsajldflasdf sdflsdjflkjaskfs adfskafdkja sdjflksajf sfksajhfkjhdlf sgslkhfksadfl sdfkdahfksa dfkshakfdhlas fsfkashfksf
-			sdfkjdshfkdahgl'af;safsgfjhsakfjl;dsklfhekfllo fhfkshfmfkehfo dfhihdjvkgb iesge gsdjkgh sdlhgsdjilduvi nge g ig'n leheruil nvarh gheg hiler hfwe'dsg gkldvsda ]'f gkl ga gdblkdjfo;VueRoutera fafkjsdn as <h1>sadflkjasl fsdaknajskljfklas
-				sdkfjlasfkdfj dsflsajdlfkjlsjadf djsklfjlaksjlfjdas fkjdslafgjldajfgl fklsjfdlsajldflasdf sdflsdjflkjaskfs adfskafdkja sdjflksajf sfksajhfkjhdlf sgslkhfksadfl sdfkdahfksa dfkshakfdhlas fsfkashfksf
-				sdfkjdshfkdahgl'af;safsgfjhsakfjl;dsklfhekfllo fhfkshfmfkehfo dfhihdjvkgb iesge gsdjkgh sdlhgsdjilduvi nge g ig'n leheruil nvarh gheg hiler hfwe'dsg gkldvsda ]'f gkl ga gdblkdjfo;VueRoutera fafkjsdn as sadflkjasl fsdaknajskljfklas
-				sdkfjlasfkdfj dsflsajdlfkjlsjadf djsklfjlaksjlfjdas fkjdslafgjldajfgl fklsjfdlsajldflasdf sdflsdjflkjaskfs adfskafdkja sdjflksajf sfksajhfkjhdlf sgslkhfksadfl sdfkdahfksa dfkshakfdhlas fsfkashfksf
-				sdfkjdshfkdahgl'af;safsgfjhsakfjl;dsklfhekfllo fhfkshfmfkehfo dfhihdjvkgb iesge gsdjkgh sdlhgsdjilduvi nge g ig'n leheruil nvarh gheg hiler hfwe'dsg gkldvsda ]'f gkl ga gdblkdjfo;VueRoutera fafkjsdn as sadflkjasl fsdaknajskljfklas
-				sdkfjlasfkdfj dsflsajdlfkjlsjadf djsklfjlaksjlfjdas fkjdslafgjldajfgl fklsjfdlsajldflasdf sdflsdjflkjaskfs adfskafdkja sdjflksajf sfksajhfkjhdlf sgslkhfksadfl sdfkdahfksa dfkshakfdhlas fsfkashfksf
-				sdfkjdshfkdahgl'af;safsgfjhsakfjl;dsklfhekfllo fhfkshfmfkehfo dfhihdjvkgb iesge gsdjkgh sdlhgsdjilduvi nge g ig'n leheruil nvarh gheg hiler hfwe'dsg gkldvsda ]'f gkl ga gdblkdjfo;VueRoutera fafkjsdn as sadflkjasl fsdaknajskljfklas
-				sdkfjlasfkdfj dsflsajdlfkjlsjadf djsklfjlaksjlfjdas fkjdslafgjldajfgl fklsjfdlsajldflasdf sdflsdjflkjaskfs adfskafdkja sdjflksajf sfksajhfkjhdlf sgslkhfksadfl sdfkdahfsadflkjasl fsdaknajskljfklas sdkfjlasfkdfj dsflsajdlfkjlsjadf
-				djsklfjlaksjlfjdas fkjdslafgjldajfgl fklsjfdlsajldflasdf sdflsdjflkjaskfs adfskafdkja sdjflksajf sfksajhfkjhdlf sgslkhfksadfl sdfkdahfksa dfkshakfdhlas fsfkashfksf sdfkjdshfkdahgl'af;safsgfjhsakfjl;dsklfhekfllo fhfkshfmfkehfo dfhihdjvkgb
-				iesge gsdjkgh sdlhgsdjilduvi nge g ig'n leheruil nvarh gheg hiler hfwe'dsg gkldvsda ]'f gkl ga gdblkdjfo;VueRoutera fafkjsdn as ksa dfkshakfdhlas fsfkashfksf sdfkjdshfkdahgl'af;safsgfjhsakfjl;dsklfhekfllo fhfkshfmfkehfo dfhihdjvkgb iesge
-				gsdjkgh sdlhgsdjilduvi nge g ig'n leheruil nvarh gheg hiler hfwe'dsg gkldvsda ]'f gkl ga gdblkdjfo;VueRoutera fafkjsdn as sadflkjasl fsdaknajskljfklas sdkfjlasfkdfj dsflsajdlfkjlsjadf djsklfjlaksjlfjdas fkjdslafgjldajfgl fklsjfdlsajldflasdf
-				sdflsdjflkjaskfs adfskafdkja sdjflksajf sfksajhfkjhdlf sgslkhfksadfl sdfkdahfksa dfkshakfdhlas fsfkashfksf sdfkjdshfkdahgl'af;safsgfjhsakfjl;dsklfhekfllo fhfkshfmfkehfo dfhihdjvkgb iesge gsdjkgh sdlhgsdjilduvi nge g ig'n leheruil nvarh gheg
-				hiler hfwe'dsg gkldvsda ]'f gkl ga gdblkdjfo;VueRoutera fafkjsdn as sadflkjasl fsdaknajskljfklas sdkfjlasfkdfj dsflsajdlfkjlsjadf djsklfjlaksjlfjdas fkjdslafgjldajfgl fklsjfdlsajldflasdf sdflsdjflkjaskfs adfskafdkja sdjflksajf sfksajhfkjhdlf
-				sgslkhfksadfl sdfkdahfksa dfkshakfdhlas fsfkashfksf sdfkjdshfkdahgl'af;safsgfjhsakfjl;dsklfhekfllo fhfkshfmfkehfo dfhihdjvkgb iesge gsdjkgh sdlhgsdjilduvi nge g ig'n leheruil nvarh gheg hiler hfwe'dsg gkldvsda ]'f gkl ga gdblkdjfo;VueRoutera
-				fafkjsdn as sadflkjasl fsdaknajskljfklas sdkfjlasfkdfj dsflsajdlfkjlsjadf djsklfjlaksjlfjdas fkjdslafgjldajfgl fklsjfdlsajldflasdf sdflsdjflkjaskfs adfskafdkja sdjflksajf sfksajhfkjhdlf sgslkhfksadfl sdfkdahfksa dfkshakfdhlas fsfkashfksf
-				sdfkjdshfkdahgl'af;safsgfjhsakfjl;dsklfhekfllo fhfkshfmfkehfo dfhihdjvkgb iesge gsdjkgh sdlhgsdjilduvi nge g ig'n leheruil nvarh gheg hiler hfwe'dsg gkldvsda ]'f gkl ga gdblkdjfo;VueRoutera fafkjsdn as sadflkjasl fsdaknajskljfklas
-				sdkfjlasfkdfj dsflsajdlfkjlsjadf djsklfjlaksjlfjdas fkjdslafgjldajfgl fklsjfdlsajldflasdf sdflsdjflkjaskfs adfskafdkja sdjflksajf sfksajhfkjhdlf sgslkhfksadfl sdfkdahfksa dfkshakfdhlas fsfkashfksf
-				sdfkjdshfkdahgl'af;safsgfjhsakfjl;dsklfhekfllo fhfkshfmfkehfo dfhihdjvkgb iesge gsdjkgh sdlhgsdjilduvi nge g ig'n leheruil nvarh gheg hiler hfwe'dsg gkldvsda ]'f gkl ga gdblkdjfo;VueRoutera fafkjsdn as sadflkjasl fsdaknajskljfklas
-				sdkfjlasfkdfj dsflsajdlfkjlsjadf djsklfjlaksjlfjdas fkjdslafgjldajfgl fklsjfdlsajldflasdf sdflsdjflkjaskfs adfskafdkja sdjflksajf sfksajhfkjhdlf sgslkhfksadfl sdfkdahfksa dfkshakfdhlas fsfkashfksf
-				sdfkjdshfkdahgl'af;safsgfjhsakfjl;dsklfhekfllo fhfkshfmfkehfo dfhihdjvkgb iesge gsdjkgh sdlhgsdjilduvi nge g ig'n leheruil nvarh gheg hiler hfwe'dsg gkldvsda ]'f gkl ga gdblkdjfo;VueRoutera fafkjsdn as </h1>'
+			{{info}}
 			<router-view />
 		</div>
 	</div>
@@ -119,16 +99,18 @@ export default {
 		req: function(user) {
 			let self = this
 			console.log(this.$Ciphers.encode("Vigenere Cipher", "Hello, World!@#$%^&*()_+-=", ["Pwd"]))
-			let a = fetch("http://localhost:5000/api/user/" + user, {
+			if(self.$cookies.get("user")){
+			var a = fetch('http://localhost:5000/api/user/' + user, {
 				method: 'GET',
 				headers: {
-					// "A-T": atob(self.$cookies.get("user")).split(";")[1]
 					"A-T": self.$Ciphers.decode("Vigenere Cipher", self.$cookies.get("user"),
 						["Pwd"]).split(";")[1]
-					// "A-T": "WyJiJyQyYiQxMiRDR3l1UXVETmhIRzBqRFR4YjRLYXNPJyJd.YveGPg.l7f2Wb1aaxZDX4EDkLySBAQBXpA"
-					// WyJiJyQyYiQxMiRDR3l1UXVETmhIRzBqRFR4YjRLYXNPJyJd.YveH - w.p_Axi4m2ECFQE8fCrtXlRtQSkwA
+
 				}
-			})
+			})}
+			else{
+				a=Promise.reject("Login")
+			}
 			a.then(response => response.json()).then(function(res) {
 				console.log(res);
 				self.info = res;
@@ -156,6 +138,7 @@ main {
 	max-height: 100vh;
 	overflow-x: auto;
 	overflow-y: hidden;
+
 }
 
 .b-example-divider {
