@@ -1,44 +1,22 @@
 <template>
 <div class="trackers align-items-center">
-	<!-- <table class='table table-bordered tracker_table'>
-		<thead>
-			<tr>
-				<th>S.no</th>
-				<th>Tracker name (last log time)</th>
-				<th>Tracker description</th>
-				<th>Add new log</th>
-				<th>Actions</th>
-			</tr>
-		</thead>
-		<tbody v-for="(t,index) in trackers" :key='t.tracker_id'>
-			<tr>
-				<td>{{index}}</td>
-				<td><a :href="'/tracker/'+t.tracker_id">{{t.tracker_name}}</a> <span v-if="t.last_updated">({{t.last_updated | capitalize}})</span><span v-else> (-/-/- -:-:-)</span></td>
-				<td>{{t.tracker_description}}</td>
-				<td><a :href="'/'+t.tracker_id+'/log/add'">{{t.tracker_type}}+</a></td>
-				<td>
-					<button type="button" value="edit"><a :href="'/tracker/'+t.tracker_id+'/update'">Edit</a></button>
-					<button type="button" value="delete"><a :href="'/tracker/'+t.tracker_id+'/delete'">Delete</a></button>
-				</td>
-			</tr>
-		</tbody>
-	</table> -->
 	<div class="card-deck row row-cols-lg-3 row-cols-2 justify-content-center">
-		<div class="col m-3" v-for="t in trackers" :key='t.tracker_id'>
+		<div class="col m-3" v-for="(t,index) in trackers" :key='t.tracker_id'>
 			<div class="card border-success">
 				<div class="card-header align-middle">
-					<h4>{{t.tracker_id}}) {{t.tracker_name}}</h4>
+					<h4>{{index}}) {{t.tracker_name}}</h4>
+					<span class="text-muted" v-if='t.last_updated'><small>Last logged: {{t.last_updated|capitalize}}</small></span>
 				</div>
 				<div class="card-body h5">
 					<div class="card-title"></div>
 					<div class="card-text"> Tracker type: {{t.tracker_type}}<br><br>
 						<span v-if="t.tracker_description">Tracker description: {{t.tracker_description}}<br></span>
-						<span class="text-muted" v-if='t.last_updated'><em>Last logged: {{t.last_updated|capitalize}}</em></span>
 					</div>
 				</div>
 				<div class="card-footer collapse">
-					<button type="button" value="edit"><a :href="'/tracker/'+t.tracker_id+'/update'">Edit</a></button>
-					<button type="button" value="delete"><a :href="'/tracker/'+t.tracker_id+'/delete'">Delete</a></button>
+					<a :href='"/tracker/"+t.tracker_id' class='btn btn-primary'>Details</a>
+					<a :href="'/tracker/update/'+t.tracker_id" class='btn btn-primary'>Edit</a>
+					<a :href="'/tracker/delete/'+t.tracker_id" class='btn btn-primary'>Delete</a>
 				</div>
 			</div>
 		</div>

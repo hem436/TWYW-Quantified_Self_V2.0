@@ -16,10 +16,10 @@ tracker_fields={
     "last_updated":fields.String(attribute='lastupdate'),
     "logs":fields.String(attribute=lambda x:[(i.log_id,i.log_value) for i in x.logs])
 }
+
 user_fields={
     "user_id":fields.String(attribute='id'),
     "username":fields.String,
-    # "trackers":fields.String(attribute=lambda x: [(i.tracker_id,i.name) for i in x.trackers])
     "trackers":fields.List(fields.Nested(tracker_fields))
 }
 #------------validation functions----------
@@ -143,7 +143,7 @@ class TrackerApi(Resource):
     @auth_token_required
     def get(self,tracker_id):
         try:
-            trk=tracker.query.get(tracker_id)
+            trk=tracker.query.get(int(tracker_id))
             if trk==None:
                 return "Tracker id not found",404
             return marshal(trk,tracker_fields)

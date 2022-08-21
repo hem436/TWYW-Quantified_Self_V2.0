@@ -17,9 +17,9 @@ const routes = [{
         }
       },
       {
-        path: 'about',
-        name: 'dash.about',
-        component: () => import('@/views/AboutView')
+        path: 'tracker/:id',
+        name: 'dash.tracker',
+        component: () => import('@/components/DashTracker')
       }
     ]
   },
@@ -34,7 +34,8 @@ const routes = [{
     name: 'signup',
     component: () => import('@/views/SignUp'),
     meta:{auth:false}
-  }
+  },
+
 ]
 
 const router = new VueRouter({
