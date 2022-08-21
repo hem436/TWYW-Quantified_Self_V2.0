@@ -1,39 +1,40 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '../store/index.js'
 
 Vue.use(VueRouter)
 
-const routes = [
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  },{
-      path: '/dashboard',
-      component: ()=>import('@/components/dash/DashIndex'),
-      children: [
-      {
+const routes = [{
+    path: '/dashboard',
+    component: () => import('@/views/DashIndex'),
+    children: [{
         path: '/',
         name: 'dash.home',
-        component: () => import('@/components/dash/DashHome'),
+        component: () => import('@/components/DashHome'),
         meta: {
           title: 'Home Dashboard',
+          auth:true
         }
-      }]
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      component: ()=>import('@/components/LogIn')
-    },
-    {
-      path: '/signup',
-      name: 'signup',
-      component: ()=>import('@/components/SignUp')
-    }
+      },
+      {
+        path: 'about',
+        name: 'dash.about',
+        component: () => import('@/views/AboutView')
+      }
+    ]
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/LogIn'),
+    meta:{auth:false}
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: () => import('@/views/SignUp'),
+    meta:{auth:false}
+  }
 ]
 
 const router = new VueRouter({
@@ -42,4 +43,17 @@ const router = new VueRouter({
   routes
 })
 
+router.beforeEach(async(to, from,next) => {
+  // instead of having to check every route record with "WyI1MjJlMDBmMGI3ODE0NTg0YjcwMmEyN2IwZGEwOTFkYiJd.Yv3haw.CCf1H1tUJqdwZmusxwOFuCCLwkI"
+  // to.matched.some(record => record.meta.requiresAuth)
+  console.log(from.path+'-->'+to.path)
+  console.log(store.state.token.length)
+  if (to.meta.auth) {
+    if(store.state.token.length==83)
+    {next()}
+    else{next({name:'login'})}
+  }
+  else {
+  next()}
+})
 export default router

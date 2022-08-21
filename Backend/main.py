@@ -2,7 +2,7 @@
 #basic imports
 import csv
 from datetime import datetime
-
+import os
 import bcrypt
 from flask import Flask, flash, redirect, render_template, request
 from flask_login import LoginManager
@@ -23,6 +23,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///quantified_self_database.sqli
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 app.config['SECRET_KEY']='myappquantifie'
 
+app.config['SECURITY_UNAUTHORIZED_VIEW']= None
 app.config['SECURITY_USERNAME_ENABLE']=True
 app.config['SECURITY_TOKEN_AUTHENTICATION_HEADER']="A-T"
 app.config['SECURITY_TOKEN_MAX_AGE']=3600
@@ -166,7 +167,7 @@ def view_tl(tracker_id):
                 llim,hlim,comp='','',''
             if request.form.get('button')=="export_data":
                 filename=request.form.get("filename")
-                file=open(f'static/exported_files/{filename}.csv','w')
+                file=open(f'/static/exported_files/{filename}.csv','w')
                 w=csv.writer(file)
         else:
           llim,hlim,comp='','',''
@@ -189,7 +190,7 @@ def view_tl(tracker_id):
                     y.append(datetime.strptime(i.log_value,"%H:%M:%S"))
         plt.plot(x,y,marker='o',color='b',linestyle='--')
         plt.gcf().autofmt_xdate()
-        plt.savefig('static/chart.png')
+        plt.savefig('/static/chart.png')
         if file:
             w.writerow(['Timestamp','Log_value'])
             for i in range(len(x)):
@@ -201,7 +202,7 @@ def view_tl(tracker_id):
             img=""
         return render_template('tracker.html',tracker=t,chart=img,filename=filename)
   except Exception as e:
-      print(e)
+      print(e,os.getcwd())
       return(main())
 
 

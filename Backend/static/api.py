@@ -1,15 +1,11 @@
 from flask import redirect, render_template, request
 from flask_restful  import Resource,fields,marshal_with,marshal
-from flask_security import auth_token_required,hash_password,login_user,verify_password
+from flask_security import auth_required,auth_token_required,hash_password,login_user,verify_password
 from database import User,tracker,log,user_datastore,db
 import bcrypt
 #------------output fields-----------------
 
-user_fields={
-    "user_id":fields.String(attribute='id'),
-    "username":fields.String,
-    "trackers":fields.String(attribute=lambda x: [(i.tracker_id,i.name) for i in x.trackers])
-}
+
 tracker_fields={
     "user_id":fields.Integer,
     "tracker_id":fields.Integer,
@@ -17,8 +13,14 @@ tracker_fields={
     "tracker_description":fields.String(attribute='desc'),
     "tracker_type":fields.String(attribute='type'),
     "settings":fields.String,
-    "last updated":fields.String(attribute='lastupdate'),
+    "last_updated":fields.String(attribute='lastupdate'),
     "logs":fields.String(attribute=lambda x:[(i.log_id,i.log_value) for i in x.logs])
+}
+user_fields={
+    "user_id":fields.String(attribute='id'),
+    "username":fields.String,
+    # "trackers":fields.String(attribute=lambda x: [(i.tracker_id,i.name) for i in x.trackers])
+    "trackers":fields.List(fields.Nested(tracker_fields))
 }
 #------------validation functions----------
 def username_valid(name):
