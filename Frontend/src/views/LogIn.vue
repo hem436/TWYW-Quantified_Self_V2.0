@@ -62,10 +62,11 @@ export default {
 						throw "no response"
 					}
 				}).then(function(data) {
-					self.$cookies.set("data", data.auth_token)
-					console.log(data.auth_token)
-					self.$cookies.set("user", self.$Ciphers.encode("Vigenere Cipher", data.username + ";" + data.auth_token, ["Pwd"]));
-					window.location.href = '/Dashboard';
+					// self.$cookies.set("data", data.auth_token)
+					// console.log(data.auth_token)
+					self.$cookies.set("user", self.$Ciphers.encode("Vigenere Cipher", data.user_id + ";" + data.username + ";" + data.auth_token, ["Pwd"]));
+					self.$store.commit('login', data);
+					self.$router.push('/dashboard');
 				}).catch(error => console.log(error))
 			} else {
 				alert("Invalid username or password");

@@ -4,7 +4,7 @@
 		<div class="col m-3" v-for="(t,index) in trackers" :key='t.tracker_id'>
 			<div class="card border-success">
 				<div class="card-header align-middle">
-					<h4>{{index}}) {{t.tracker_name}}</h4>
+					<h4>{{index+1}}) {{t.tracker_name}}</h4>
 					<span class="text-muted" v-if='t.last_updated'><small>Last logged: {{t.last_updated|capitalize}}</small></span>
 				</div>
 				<div class="card-body h5">
@@ -43,7 +43,7 @@ export default {
 			method: 'GET',
 			headers: {
 				"A-T": self.$Ciphers.decode("Vigenere Cipher", self.$cookies.get("user") || "",
-					["Pwd"]).split(";")[1] || ""
+					["Pwd"]).split(";")[2] || ""
 			}
 		}).then((response) => {
 			// console.log(response)

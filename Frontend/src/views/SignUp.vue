@@ -64,7 +64,8 @@ export default {
 				}).then(function(data) {
 					// console.log(data);
 					self.$cookies.set("user", self.$Ciphers.encode("Vigenere Cipher", data.username + ";" + data.auth_token, ["Pwd"]));
-					window.location.href_ = '/dashboard';
+					self.$store.commit('login', data);
+					self.$router.push('/dashboard');
 				}).catch(error => console.log(error))
 				console.log(response);
 			} else {

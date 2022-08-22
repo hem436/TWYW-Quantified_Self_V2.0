@@ -3,6 +3,7 @@ from flask_restful  import Resource,fields,marshal_with,marshal
 from flask_security import auth_required,auth_token_required,hash_password,login_user,verify_password
 from database import User,tracker,log,user_datastore,db
 import bcrypt
+from datetime import datetime
 #------------output fields-----------------
 
 
@@ -227,14 +228,46 @@ class TrackerApi(Resource):
 class LogApi(Resource):
     @auth_token_required
     def get(self,log_id):
-        pass
+        try:
+            logobj=log.query.get(int(log_id));
+            if log:
+                return marshal(logobj,log_fields)
+            else:
+                return "NOT FOUND",404
+        except:
+            return "INTERNAL SERVER ERROR",500
+
     @auth_token_required
     def put(self,log_id):
         pass
     @auth_token_required
     def delete(self,log_id):
-        pass
+        try:
+            lobj=log.query.get(int(log_id))
+            if lobj:
+                db.session.delete(tobj)
+                db.session.commit()
+                return "OK",200
+            else:
+                return "NOT FOUND",404
+        except:
+            return "INTERNAL SERVER ERROR",500
+
     @auth_token_required
     def post(self):
-        pass
+        try:
+            ldata=request.json()
+            ltid=ldata['tracker_id']
+            lval=ldata['log_value']
+            lnote=ldata['log_note']
+            ldatetime=log_datetime=datetime.strptime(ldata['log_datetime'],'%d/%b/%Y, %H:%M:%S.%f')
+            #Validation
+            #----------
+            lobj=log(tracker_id=ltid,log_datetime=ldatetime,note=lnote,log_value=lval)
+            db.session.add(lobj)
+            db.session.commit()
+            return "OK",200
+        except:
+            return "INTERNAL SERVER ERROR",500
+
 #===========Api===========
