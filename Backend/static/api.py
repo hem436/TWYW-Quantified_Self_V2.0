@@ -16,7 +16,13 @@ tracker_fields={
     "last_updated":fields.String(attribute='lastupdate'),
     "logs":fields.String(attribute=lambda x:[(i.log_id,i.log_value) for i in x.logs])
 }
-
+log_fields={
+    "tracker_id":fields.Integer,
+    "log_id":fields.Integer,
+    "log_datetime":fields.String,
+    "note":fields.String,
+    "log_value":fields.String
+}
 user_fields={
     "user_id":fields.String(attribute='id'),
     "username":fields.String,
@@ -146,7 +152,7 @@ class TrackerApi(Resource):
             trk=tracker.query.get(int(tracker_id))
             if trk==None:
                 return "Tracker id not found",404
-            return marshal(trk,tracker_fields)
+            return {**marshal(trk,tracker_fields),"log_objects":marshal(trk.logs,log_fields)}
         except:
             return "Internal Server Error",500
 

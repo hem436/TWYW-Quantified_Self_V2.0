@@ -116,12 +116,8 @@ main {
 	height: -webkit-fill-available;
 	max-height: 100vh;
 	overflow-x: auto;
-<<<<<<< HEAD:Frontend/src/views/DashIndex.vue
 	overflow-y: hidden; */
-=======
-	overflow-y: hidden;
 
->>>>>>> 7d4baa6a059e9a568c9b0a9b9fb5d0bdb5ce08b9:Frontend/src/components/dash/DashIndex.vue
 }
 
 .b-example-divider {
