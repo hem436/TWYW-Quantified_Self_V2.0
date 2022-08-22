@@ -1,12 +1,8 @@
 <template>
 <div id="dash container-fluid">
-<<<<<<< HEAD:Frontend/src/views/DashIndex.vue
-	<div class="d-flex row">
-		<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse" style=";background-color:#0dcaf0 ">
-=======
+
 	<div class="row d-flex">
 		<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="background-color:#0dcaf0 ">
->>>>>>> 7d4baa6a059e9a568c9b0a9b9fb5d0bdb5ce08b9:Frontend/src/components/dash/DashIndex.vue
 			<div class="flex-shrink-0 " style="background-color:#a3eeff">
 				<a href="/" class="d-flex align-items-center pt-3 pb-2 mb-3 link-dark text-decoration-none border-bottom">
 					<svg class="bi me-2" width="30" height="24">
@@ -85,11 +81,7 @@
 						<span data-feather="calendar"></span> This week </button>
 				</div>
 			</div>
-<<<<<<< HEAD:Frontend/src/views/DashIndex.vue
-=======
-			<button type="button" name="button" @click="req('hem')">query</button>
-			{{info}}
->>>>>>> 7d4baa6a059e9a568c9b0a9b9fb5d0bdb5ce08b9:Frontend/src/components/dash/DashIndex.vue
+
 			<router-view />
 		</div>
 	</div>
@@ -103,32 +95,7 @@ export default {
 			username: this.$store.state.user
 		}
 	},
-<<<<<<< HEAD:Frontend/src/views/DashIndex.vue
 	methods: {},
-=======
-	methods: {
-		req: function(user) {
-			let self = this
-			console.log(this.$Ciphers.encode("Vigenere Cipher", "Hello, World!@#$%^&*()_+-=", ["Pwd"]))
-			if(self.$cookies.get("user")){
-			var a = fetch('http://localhost:5000/api/user/' + user, {
-				method: 'GET',
-				headers: {
-					"A-T": self.$Ciphers.decode("Vigenere Cipher", self.$cookies.get("user"),
-						["Pwd"]).split(";")[1]
-
-				}
-			})}
-			else{
-				a=Promise.reject("Login")
-			}
-			a.then(response => response.json()).then(function(res) {
-				console.log(res);
-				self.info = res;
-			}).catch(rej => console.log(rej))
-		}
-	}
->>>>>>> 7d4baa6a059e9a568c9b0a9b9fb5d0bdb5ce08b9:Frontend/src/components/dash/DashIndex.vue
 }
 </script>
 
