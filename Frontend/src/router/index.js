@@ -5,6 +5,9 @@ import store from '../store/index.js'
 Vue.use(VueRouter)
 
 const routes = [{
+    path:'/',
+    redirect:'/dashboard'
+  },{
     path: '/dashboard',
     component: () => import('@/views/DashIndex'),
     children: [{

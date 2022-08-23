@@ -83,7 +83,7 @@ a {
 
 .card {
 	box-shadow: 0 6px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.1);
-	background-color: #eb59e92e;
+	background-color: #00f3ff2e;
 	border-radius: 15px;
 	min-height: 15rem;
 }
