@@ -33,6 +33,7 @@
 
 <script>
 import Chart from 'chart.js/auto';
+import 'chartjs-adapter-date-fns';
 export default {
 	data() {
 		return {
@@ -40,8 +41,8 @@ export default {
 			logs: []
 		}
 	},
-	methods:{
-		refresh(){
+	methods: {
+		refresh() {
 			let self = this
 			fetch("http://localhost:5000/api/tracker/" + this.tracker_id, {
 				method: 'GET',
@@ -50,7 +51,7 @@ export default {
 						["Pwd"]).split(";")[2] || ""
 				}
 			}).then((response) => {
-				console.log(response)
+				// console.log(response)
 				if(response.ok && !response.redirected) {
 					return response.json()
 				} else {
@@ -60,30 +61,30 @@ export default {
 					}
 				}
 			}).then((data) => {
-				console.log(data)
+				// console.log(data)
 				for(let i of data.log_objects) {
 					self.logs.push(i)
 				}
 			}).catch(rej => {
-				console.log(rej)
+				// console.log(rej)
 				console.log(rej.error + ' kindly re-login')
 				self.$router.push('/login') //remember
 			})
 		}
 	},
-	watch:{
-		logs:function(n,o){
-			console.log(o);
-			if(n.length>0){
+	watch: {
+		logs: function(n) {
+			// console.log(o);
+			if(n.length > 0) {
 				const ctx = document.getElementById('myChart')
-				let xlabel=[];
-				let ylabel=[];
-				for(let i of n){
+				let xlabel = [];
+				let ylabel = [];
+				for(let i of this.logs) {
 					xlabel.push(i.log_datetime)
 					ylabel.push(i.log_value)
 				}
-				console.log(xlabel);
-				console.log(ylabel);
+				// console.log(xlabel);
+				// console.log(ylabel);
 				new Chart(ctx, {
 					type: 'line',
 					data: {
@@ -98,21 +99,20 @@ export default {
 					},
 					options: {
 						scales: {
-							x:{
-									type: 'time',
-									},
+							x: {
+								type: 'time',
+							},
 							y: {
 								beginAtZero: true
 							}
 						}
 					}
 				})
+			}
 		}
-	}},
-	created() {
-		this.refresh()
 	},
-	mounted(){
+	mounted() {
+		this.refresh()
 	}
 }
 </script>

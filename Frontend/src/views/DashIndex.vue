@@ -1,6 +1,5 @@
 <template>
 <div id="dash container-fluid">
-
 	<div class="row d-flex">
 		<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="background-color:#0dcaf0 ">
 			<div class="flex-shrink-0 " style="background-color:#a3eeff">
@@ -47,7 +46,9 @@
 						<button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#log-collapse" aria-expanded="false"> Logs </button>
 						<div class="collapse" id="log-collapse">
 							<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-								<li><router-link to="/log/add" class="link-dark rounded">New</router-link></li>
+								<li>
+									<router-link to="/log/add" class="link-dark rounded"><a href="#" class="link-dark rounded">New</a></router-link>
+								</li>
 								<li><a href="#" class="link-dark rounded">Export</a></li>
 								<li><a href="#" class="link-dark rounded">Import</a></li>
 								<!-- <li><a href="#" class="link-dark rounded">Generate report</a></li> -->
@@ -81,7 +82,6 @@
 						<span data-feather="calendar"></span> This week </button>
 				</div>
 			</div>
-
 			<router-view />
 		</div>
 	</div>
@@ -117,7 +117,6 @@ main {
 	max-height: 100vh;
 	overflow-x: auto;
 	overflow-y: hidden; */
-
 }
 
 .b-example-divider {

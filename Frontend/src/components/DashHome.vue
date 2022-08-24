@@ -5,7 +5,7 @@
 			<div class="card border-success">
 				<div class="card-header align-middle">
 					<h4>{{index+1}}) {{t.tracker_name}}</h4>
-					<span class="text-muted" v-if='t.last_updated'><small>Last logged: {{t.last_updated|capitalize}}</small></span>
+					<span class="text-muted" v-if='t.last_updated'><small>Last logged: {{t.last_updated|date_format}}</small></span>
 				</div>
 				<div class="card-body h5">
 					<div class="card-title"></div>
@@ -14,7 +14,7 @@
 					</div>
 				</div>
 				<div class="card-footer collapse">
-					<router-link :to="{ name: 'dash.tracker', params: {id:t.tracker_id} }">Details</router-link>
+					<router-link :to="{ name: 'dash.tracker', params: {id:t.tracker_id} }"><button type="button" class='btn btn-primary'>Details</button></router-link>
 					<a :href="'/tracker/update/'+t.tracker_id" class='btn btn-primary'>Edit</a>
 					<a :href="'/tracker/delete/'+t.tracker_id" class='btn btn-primary'>Delete</a>
 				</div>
@@ -26,7 +26,7 @@
 
 <script>
 import Vue from 'vue'
-Vue.filter('capitalize', function(value) {
+Vue.filter('date_format', function(value) {
 	if(!value) return ''
 	value = value.toString()
 	return value.slice(0, -7)
@@ -34,37 +34,44 @@ Vue.filter('capitalize', function(value) {
 export default {
 	data() {
 		return {
-			trackers: []
+			trackers: this.$store.getters.get_trackers
 		}
 	},
-	beforeCreate() {
-		let self = this
-		fetch("http://localhost:5000/api/user/" + (self.$store.state.user), {
-			method: 'GET',
-			headers: {
-				"A-T": self.$Ciphers.decode("Vigenere Cipher", self.$cookies.get("user") || "",
-					["Pwd"]).split(";")[2] || ""
-			}
-		}).then((response) => {
-			// console.log(response)
-			if(response.ok && !response.redirected) {
-				return response.json()
-			} else {
-				throw {
-					'e_code': response.status,
-					'error': response.statusText
+	methods: {
+		refresh() {
+			let self = this
+			fetch("http://localhost:5000/api/user/" + (self.$store.state.user), {
+				method: 'GET',
+				headers: {
+					"A-T": self.$Ciphers.decode("Vigenere Cipher", self.$cookies.get("user") || "",
+						["Pwd"]).split(";")[2] || ""
 				}
-			}
-		}).then((data) => {
-			for(let i of data.trackers) {
-				self.trackers.push(i)
-				self.$store.commit('set_tracker',i)
-			}
-		}).catch(rej => {
-			console.log(rej.error + ' kindly re-login')
-			self.$router.push('/login') //remember
-		})
+			}).then((response) => {
+				// console.log(response)
+				if(response.ok && !response.redirected) {
+					return response.json()
+				} else {
+					throw {
+						'e_code': response.status,
+						'error': response.statusText
+					}
+				}
+			}).then((data) => {
+				for(let i of data.trackers) {
+					// self.trackers.push(i)
+					self.$store.commit('set_tracker', i)
+				}
+			}).catch(rej => {
+				console.log(rej.error + ' kindly re-login')
+				self.$router.push('/login') //remember
+			})
+		}
 	},
+	mounted() {
+		if(this.$store.getters.tracker_types.length == 0) {
+			this.refresh()
+		}
+	}
 }
 </script>
 
