@@ -14,7 +14,7 @@
 					</div>
 				</div>
 				<div class="card-footer collapse">
-					<a :href='"/tracker/"+t.tracker_id' class='btn btn-primary'>Details</a>
+					<router-link :to="{ name: 'dash.tracker', params: {id:t.tracker_id} }">Details</router-link>
 					<a :href="'/tracker/update/'+t.tracker_id" class='btn btn-primary'>Edit</a>
 					<a :href="'/tracker/delete/'+t.tracker_id" class='btn btn-primary'>Delete</a>
 				</div>
@@ -58,6 +58,7 @@ export default {
 		}).then((data) => {
 			for(let i of data.trackers) {
 				self.trackers.push(i)
+				self.$store.commit('set_tracker',i)
 			}
 		}).catch(rej => {
 			console.log(rej.error + ' kindly re-login')

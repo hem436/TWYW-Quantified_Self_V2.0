@@ -47,7 +47,7 @@
 						<button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#log-collapse" aria-expanded="false"> Logs </button>
 						<div class="collapse" id="log-collapse">
 							<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-								<li><a href="#" class="link-dark rounded">New</a></li>
+								<li><router-link to="/log/add" class="link-dark rounded">New</router-link></li>
 								<li><a href="#" class="link-dark rounded">Export</a></li>
 								<li><a href="#" class="link-dark rounded">Import</a></li>
 								<!-- <li><a href="#" class="link-dark rounded">Generate report</a></li> -->

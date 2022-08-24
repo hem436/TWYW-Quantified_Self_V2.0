@@ -150,6 +150,7 @@ class TrackerApi(Resource):
     @auth_token_required
     def get(self,tracker_id):
         try:
+
             trk=tracker.query.get(int(tracker_id))
             if trk==None:
                 return "Tracker id not found",404

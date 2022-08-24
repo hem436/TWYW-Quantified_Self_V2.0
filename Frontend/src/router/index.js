@@ -23,6 +23,11 @@ const routes = [{
         path: '/tracker/:id',
         name: 'dash.tracker',
         component: () => import('@/components/DashTracker')
+      },
+      {
+        path:'/log/add',
+        name: 'dash.log',
+        component: () => import('@/components/AddLog')
       }
     ]
   },
