@@ -11,41 +11,30 @@
     <br />
     <div class="row">
       Debugging:{{ tracker_types }}
-      <div class="col-6 offset-3  d-flex justify-content-center">
+      <div class="col-6 offset-3 h5">
         <div class="row">
-          <div class="col-6 offset-3 d-flex justify-content-center">
-            <div class="dropdown">
-              <a
-                class="btn  dropdown-toggle "
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                data-bs-display="static"
-                aria-expanded="false"
-              >
-                <label class="h5" for="checkbox"
-                  >Select Trackers to add logs:
-                </label>
-                <input id="checkbox" type="text" name="form-control" value="" />
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li class="" v-for="i in get_trackers" :key="i.tracker_id">
+          <div class="col-6 d-flex ">
+            Add logs to Tracker:
+          </div>
+          <div class="col-6">
+            <select id="sel_trk">
+                <option class="form-check" v-for="i in get_trackers" :key="i.tracker_id">
                   <input
                     class="form-check-input mx-1"
-                    type="checkbox"
+                    type="radio"
                     :id="i.tracker_id"
+                    :value=i.tracker_type
                   />
                   <label :for="i.tracker_id"
                     >{{ i.tracker_name }}-{{ i.tracker_type }}</label
                   >
-                </li>
-              </ul>
-            </div>
+                </option>
+            </select>
           </div>
         </div>
         <div class="row">
-          <div class="col d-flex justify-content-center">
-            Tracker type: {{ this.tracker_type }}
+          <div class="col-6 d-flex">
+            Tracker type: {{ this.sel_tracker.split("-")[0] }}
           </div>
         </div>
       </div>
@@ -55,11 +44,13 @@
 
 <script>
 import { mapGetters } from "vuex";
+
+
 export default {
   data() {
     return {
       tracker_id: this.$store.getters.tracker_ids,
-      tracker_type: ""
+      tracker: ""
     };
   },
   methods: {
@@ -100,12 +91,14 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["tracker_types", "get_trackers", "tracker_ids"])
+    ...mapGetters(["tracker_types", "get_trackers", "tracker_ids"]),
+    sel_tracker(){return this.tracker}
   },
   mounted() {
     if (this.$store.getters.tracker_types.length == 0) {
       this.refresh();
     }
+    this.tracker=(document.getElementById('sel_trk').value)||"";
   }
 };
 </script>
