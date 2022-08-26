@@ -1,51 +1,57 @@
-var that=this;
+
 const stopwatch=
 {
-hour:0,sec:0,min: 0,
+hour:0,
+sec:0,
+min: 0,
 dispHour:0,
-  dispMin:0,
-  dispSec:0,timeoutId:null,
-timer: function(that) {
-  that.sec++;
-  if (that.sec / 60 == 1) {
-    that.min++;
-    that.sec = 0;
-    if (that.min / 60 == 1) {
-      that.hour++;
-      that.min = 0;
+dispMin:0,
+dispSec:0,
+timeoutId:null,
+timer: function() {
+  console.log("from timer")
+  console.log(this)
+  stopwatch.sec++;
+  if (stopwatch.sec / 60 == 1) {
+    stopwatch.min++;
+    stopwatch.sec = 0;
+    if (stopwatch.min / 60 == 1) {
+      stopwatch.hour++;
+      stopwatch.min = 0;
     }
   }
-  if (that.sec < 10) {
-    that.dispSec = "0" + that.sec.toString();
+  if (stopwatch.sec < 10) {
+    stopwatch.dispSec = "0" + stopwatch.sec.toString();
   } else {
-    that.dispSec = that.sec.toString();
+    stopwatch.dispSec = stopwatch.sec.toString();
   }
-  if (that.min < 10) {
-    that.dispMin = "0" + that.min.toString();
+  if (stopwatch.min < 10) {
+    stopwatch.dispMin = "0" + stopwatch.min.toString();
   } else {
-    that.dispMin = that.min.toString();
+    stopwatch.dispMin = stopwatch.min.toString();
   }
-  if (that.hour < 10) {
-    that.dispHour = "0" + that.hour.toString();
+  if (stopwatch.hour < 10) {
+    stopwatch.dispHour = "0" + stopwatch.hour.toString();
   } else {
-    that.dispHour = that.hour.toString();
+    stopwatch.dispHour = stopwatch.hour.toString();
   }
-  document.getElementById("timer").innerHTML =
-    that.dispHour + ":" + that.dispMin + ":" + that.dispSec;
+  document.getElementById("log_val").value =
+    stopwatch.dispHour + ":" + stopwatch.dispMin + ":" + stopwatch.dispSec;
 },
-start: function(that) {
-  console.log("watch");
-  that.timeoutId = window.setInterval(that.timer, 1000);
+start: function() {
+  if(this.check==='start'){
+  this.timeoutId = window.setInterval(this.timer, 1000);
   document.getElementById("start").innerHTML = "Stop";
-},
-stop: function() {
-  window.clearInterval(that.timeoutId);
+this.check='stop'}
+  else{
+  window.clearInterval(this.timeoutId);
   document.getElementById("start").innerHTML = "Start";
+this.check='start'}
 },
-reset: function(that) {
-  window.clearInterval(that.timeoutId);
-  (that.sec = 0), (that.min = 0), (that.hour = 0);
-  document.getElementById("timer").innerHTML = "00:00:00";
+reset: function() {
+  window.clearInterval(this.timeoutId);
+  (this.sec = 0), (this.min = 0), (this.hour = 0);
+  document.getElementById("log_val").value = "00:00:00";
   document.getElementById("start").innerHTML = "Start";
 }
 }

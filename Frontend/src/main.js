@@ -12,6 +12,7 @@ import store from './store'
 import VueCookies from 'vue-cookies'
 import Ciphers from './assets/ciphers.js'
 
+
 Vue.use(VueCookies);
 Vue.prototype.$Ciphers = Ciphers;
 

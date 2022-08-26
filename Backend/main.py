@@ -39,6 +39,7 @@ from static.api import *
 api.add_resource(UserApi,'/api/user/<string:username>','/api/user')
 api.add_resource(TrackerApi,'/api/tracker/<int:tracker_id>','/api/tracker')
 api.add_resource(LoginApi,'/api/login')
+api.add_resource(LogApi,'/api/log/<int:log_id>','/api/log')
 
 login_manager = LoginManager()
 login_manager.init_app(app)

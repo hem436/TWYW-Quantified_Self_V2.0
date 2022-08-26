@@ -22,8 +22,7 @@
               name="sel_trk"
               v-model="tracker"
             >
-              <option v-for="i of get_trackers" :key="i.tracker_id" :value="i"
-                >{{ i.tracker_name }}-{{ i.tracker_type }}
+              <option v-for="i of get_trackers" :key="i.tracker_id" :value="i">{{ i.tracker_name }}-{{ i.tracker_type }}
               </option>
             </select>
           </div>
@@ -73,11 +72,8 @@
             <label for="log_val">Log value</label>
           </div>
           <div class="col-6">
-            <div id="timer"></div>
-            <input id="time" type="text" :value="time" />
-            <button id="start" @click="stopwatch()">Start</button>
-            <button id="stop" @click="stopwatch()">Start</button>
-
+            <input id="log_val" type="text" :value="time" />
+            <button id="start" @click="stopwatch().start()">Start</button>
             <button id="reset" @click="stopwatch().reset()">Reset</button>
           </div>
         </div>
@@ -103,7 +99,7 @@
           </div>
           <div class="col-6">
             <textarea
-              id="note"
+              id="log_note"
               name="note"
               placeholder="Note/Remark"
             ></textarea>
@@ -111,7 +107,9 @@
         </div>
         <div class="row m-3 ">
           <div class="col d-flex justify-content-center">
-            <button type="button" name="button">Submit</button>
+            <button type="submit" name="button" @click='postlog'>Submit</button>
+            <div id="error">
+            </div>
           </div>
         </div>
       </div>
@@ -120,15 +118,14 @@
 </template>
 
 <script>
-import stopwatch from "@/assets/stopwatch.js";
-console.log(stopwatch);
 import { mapGetters } from "vuex";
-
+import stopwatch from "@/assets/stopwatch.js";
 
 export default {
   data() {
     return {
-      tracker: this.$route.params.id || "",
+      tracker: "",
+      tracker_id:this.$route.params.id||"",
       time: "00:00:00"
     };
   },
@@ -169,59 +166,71 @@ export default {
         });
     },
     stopwatch: function() {
-      // var hour = 0,
-      //   sec = 0,
-      //   min = 0;
-      // var dispHour = 0,
-      //   dispMin = 0,
-      //   dispSec = 0;
-      // var timeoutId = null;
-      // return {
-      //   timer: function() {
-      //     sec++;
-      //     if (sec / 60 == 1) {
-      //       min++;
-      //       sec = 0;
-      //       if (min / 60 == 1) {
-      //         hour++;
-      //         min = 0;
-      //       }
-      //     }
-      //     if (sec < 10) {
-      //       dispSec = "0" + sec.toString();
-      //     } else {
-      //       dispSec = sec.toString();
-      //     }
-      //     if (min < 10) {
-      //       dispMin = "0" + min.toString();
-      //     } else {
-      //       dispMin = min.toString();
-      //     }
-      //     if (hour < 10) {
-      //       dispHour = "0" + hour.toString();
-      //     } else {
-      //       dispHour = hour.toString();
-      //     }
-      //     document.getElementById("timer").innerHTML =
-      //       dispHour + ":" + dispMin + ":" + dispSec;
-      //   },
-      //   start: function() {
-      //     console.log("watch");
-      //     timeoutId = window.setInterval(this.timer, 1000);
-      //     document.getElementById("start").innerHTML = "Stop";
-      //   },
-      //   stop: function() {
-      //     window.clearInterval(timeoutId);
-      //     document.getElementById("start").innerHTML = "Start";
-      //   },
-      //   reset: function() {
-      //     window.clearInterval(timeoutId);
-      //     (sec = 0), (min = 0), (hour = 0);
-      //     document.getElementById("timer").innerHTML = "00:00:00";
-      //     document.getElementById("start").innerHTML = "Start";
-      //   }
-      // };
-      return stopwatch.start();
+      return stopwatch;
+    },
+    postlog(){
+      //----Validation------
+      if(this.tracker===""){
+        document.getElementById('error').innerHTML="Select Tracker first"
+        return null;
+      }
+      else if (document.getElementById('log_val')===null || document.getElementById('log_val').value==="") {
+        document.getElementById('error').innerHTML="Enter log value";
+        return null;
+      }
+      else if(document.getElementById('log_note')===null){
+        console.log("note element missing");
+        return null;
+
+      }
+      else{
+        document.getElementById('error').innerHTML="";
+      }
+      //#------validation--------
+      let currentdate = new Date();
+      let mstr=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let datetime = currentdate.getDate() + "/"
+                + mstr[(currentdate.getMonth())] + "/"
+                + currentdate.getFullYear()+", "
+                + currentdate.getHours() + ":"
+                + currentdate.getMinutes() + ":"
+                + currentdate.getSeconds()+"."
+                +currentdate.getMilliseconds();
+      console.log(datetime)
+      let data={
+        'tracker_id':this.tracker.tracker_id,
+        'log_value':document.getElementById('log_val').value,
+      'log_datetime':datetime,
+      'log_note':document.getElementById('log_note').value
+    }
+
+      fetch("http://localhost:5000/api/log", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "A-T":
+            this.$Ciphers
+              .decode("Vigenere Cipher", this.$cookies.get("user") || "", [
+                "Pwd"
+              ])
+              .split(";")[2] || ""
+        },
+        body:JSON.stringify(data)
+      })
+        .then(response => {
+          if (response.ok && !response.redirected) {
+            alert("Logged")
+          } else {
+            throw {
+              e_code: response.status,
+              error: response.statusText
+            };
+          }
+        })
+        .catch(rej => {
+          console.log(rej);
+          console.log(rej.error + " kindly re-login");
+        });
     }
   },
   computed: {

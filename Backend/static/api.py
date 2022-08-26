@@ -244,31 +244,43 @@ class LogApi(Resource):
     @auth_token_required
     def delete(self,log_id):
         try:
-            lobj=log.query.get(int(log_id))
-            if lobj:
-                db.session.delete(tobj)
+            l=log.query.get(int(log_id))
+            if l:
+                t=l.parent
+                db.session.delete(l)
+                if t.lastupdate==l.log_datetime:
+                  lastlog=log.query.filter(log.tracker_id==t.tracker_id).order_by(log.log_datetime.desc()).first()
+                  if lastlog:
+                    t.lastupdate=lastlog.log_datetime
+                  else:
+                    t.lastupdate=None
                 db.session.commit()
                 return "OK",200
             else:
                 return "NOT FOUND",404
-        except:
+        except Exception as e:
+            print(e)
             return "INTERNAL SERVER ERROR",500
 
     @auth_token_required
     def post(self):
-        try:
-            ldata=request.json()
-            ltid=ldata['tracker_id']
+        # try:
+            ldata=request.json
+            ltid=ldata["tracker_id"]
             lval=ldata['log_value']
             lnote=ldata['log_note']
             ldatetime=log_datetime=datetime.strptime(ldata['log_datetime'],'%d/%b/%Y, %H:%M:%S.%f')
             #Validation
             #----------
+            t=tracker.query.get(ltid);
+            if t.lastupdate==None or t.lastupdate<log_datetime:
+                t.lastupdate=log_datetime
             lobj=log(tracker_id=ltid,log_datetime=ldatetime,note=lnote,log_value=lval)
             db.session.add(lobj)
             db.session.commit()
             return "OK",200
-        except:
-            return "INTERNAL SERVER ERROR",500
+        # except Exception as e:
+            print(e)
+            return "INTERNAL SERVER ERROR ",500
 
 #===========Api===========

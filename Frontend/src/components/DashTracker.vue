@@ -18,13 +18,13 @@
 						<td>{{l.log_datetime}}</td>
 						<td>{{l.log_value}}</td>
 						<td>{{l.note}}</td>
-						<td><button type="button" name="button"><a :href="l.tracker_id+'/log/update/'+l.log_id">Edit</a></button>
-							<button type="button" name="button"><a :href="l.tracker_id+'/log/delete/'+l.log_id">Delete</a></button>
+						<td><button type="button" name="button"><router-link :to="{ name: 'log.update', params: {id:l.log_id} }">Edit</router-link></button>
+							<button type="button" name="button"><a @click.prevent="del(l.log_id)">Delete</a></button>
 						</td>
 					</tr>
 				</thead>
 			</table>
-			<div class='text-center'><button class="button h5" type="button"><a :href="tracker_id+'/log/add'">Add Log</a></button>
+			<div class='text-center'><button class="button h5" type="button"><router-link :to="{ name: 'log.add.id', params: {id:tracker_id} }">Add Log</router-link></button>
 			</div>
 		</div>
 	</div>
@@ -70,6 +70,30 @@ export default {
 				console.log(rej.error + ' kindly re-login')
 				self.$router.push('/login') //remember
 			})
+		},
+		del(id){
+			let self = this
+			fetch("http://localhost:5000/api/log/" + id, {
+				method: 'DELETE',
+				headers: {
+					"A-T": self.$Ciphers.decode("Vigenere Cipher", self.$cookies.get("user") || "",
+						["Pwd"]).split(";")[2] || ""
+				}
+			}).then((response) => {
+				// console.log(response)
+				if(response.ok && !response.redirected) {
+					window.location.reload();
+					return ""
+				} else {
+					throw {
+						'e_code': response.status,
+						'error': response.statusText
+					}
+				}
+			}).catch(rej => {
+				// console.log(rej)
+				console.log(rej.error + ' kindly re-login')
+			})
 		}
 	},
 	watch: {
@@ -101,6 +125,14 @@ export default {
 						scales: {
 							x: {
 								type: 'time',
+								time:{
+
+									unit:'minute'
+									// displayFormats: {
+                  //       minute: 'HH:MM'
+                  //   },
+									// 	ticks:{source:'auto'}
+								}
 							},
 							y: {
 								beginAtZero: true
