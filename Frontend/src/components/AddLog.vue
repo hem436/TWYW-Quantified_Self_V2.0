@@ -21,10 +21,15 @@
               class="sel_trk"
               name="sel_trk"
               v-model="tracker"
+              v-if="this.rtracker_id == 'null'"
             >
-              <option v-for="i of get_trackers" :key="i.tracker_id" :value="i">{{ i.tracker_name }}-{{ i.tracker_type }}
+              <option v-for="i of get_trackers" :key="i.tracker_id" :value="i"
+                >{{ i.tracker_name }}-{{ i.tracker_type }}
               </option>
             </select>
+            <div v-else class="sel_trk">
+              {{ sel_tracker.tracker_name }}-{{ sel_tracker.tracker_type }}
+            </div>
           </div>
         </div>
         <div class="row m-3">
@@ -107,9 +112,8 @@
         </div>
         <div class="row m-3 ">
           <div class="col d-flex justify-content-center">
-            <button type="submit" name="button" @click='postlog'>Submit</button>
-            <div id="error">
-            </div>
+            <button type="submit" name="button" @click="postlog">Submit</button>
+            <div id="error"></div>
           </div>
         </div>
       </div>
@@ -125,7 +129,7 @@ export default {
   data() {
     return {
       tracker: "",
-      tracker_id:this.$route.params.id||"",
+      rtracker_id: this.$route.params.id || null,
       time: "00:00:00"
     };
   },
@@ -168,41 +172,59 @@ export default {
     stopwatch: function() {
       return stopwatch;
     },
-    postlog(){
+    postlog() {
       //----Validation------
-      if(this.tracker===""){
-        document.getElementById('error').innerHTML="Select Tracker first"
+      if (this.tracker === "") {
+        document.getElementById("error").innerHTML = "Select Tracker first";
         return null;
-      }
-      else if (document.getElementById('log_val')===null || document.getElementById('log_val').value==="") {
-        document.getElementById('error').innerHTML="Enter log value";
+      } else if (
+        document.getElementById("log_val") === null ||
+        document.getElementById("log_val").value === ""
+      ) {
+        document.getElementById("error").innerHTML = "Enter log value";
         return null;
-      }
-      else if(document.getElementById('log_note')===null){
+      } else if (document.getElementById("log_note") === null) {
         console.log("note element missing");
         return null;
-
-      }
-      else{
-        document.getElementById('error').innerHTML="";
+      } else {
+        document.getElementById("error").innerHTML = "";
       }
       //#------validation--------
       let currentdate = new Date();
-      let mstr=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-let datetime = currentdate.getDate() + "/"
-                + mstr[(currentdate.getMonth())] + "/"
-                + currentdate.getFullYear()+", "
-                + currentdate.getHours() + ":"
-                + currentdate.getMinutes() + ":"
-                + currentdate.getSeconds()+"."
-                +currentdate.getMilliseconds();
-      console.log(datetime)
-      let data={
-        'tracker_id':this.tracker.tracker_id,
-        'log_value':document.getElementById('log_val').value,
-      'log_datetime':datetime,
-      'log_note':document.getElementById('log_note').value
-    }
+      let mstr = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+      ];
+      let datetime =
+        currentdate.getDate() +
+        "/" +
+        mstr[currentdate.getMonth()] +
+        "/" +
+        currentdate.getFullYear() +
+        ", " +
+        currentdate.getHours() +
+        ":" +
+        currentdate.getMinutes() +
+        ":" +
+        currentdate.getSeconds() +
+        "." +
+        currentdate.getMilliseconds();
+      let data = {
+        tracker_id: this.tracker.tracker_id,
+        log_value: document.getElementById("log_val").value,
+        log_datetime: datetime,
+        log_note: document.getElementById("log_note").value
+      };
 
       fetch("http://localhost:5000/api/log", {
         method: "POST",
@@ -215,11 +237,11 @@ let datetime = currentdate.getDate() + "/"
               ])
               .split(";")[2] || ""
         },
-        body:JSON.stringify(data)
+        body: JSON.stringify(data)
       })
         .then(response => {
           if (response.ok && !response.redirected) {
-            alert("Logged")
+            alert("Logged");
           } else {
             throw {
               e_code: response.status,
@@ -231,18 +253,48 @@ let datetime = currentdate.getDate() + "/"
           console.log(rej);
           console.log(rej.error + " kindly re-login");
         });
+    },
+    set_tracker(i) {
+      this.tracker = i;
     }
   },
   computed: {
     ...mapGetters(["tracker_types", "get_trackers", "tracker_ids"]),
-    sel_tracker(){return this.tracker}
+    sel_tracker() {
+      for (let i of this.get_trackers) {
+        if (i.tracker_id == this.rtracker_id) {
+          this.set_tracker(i);
+        }
+      }
+      return this.tracker;
+    }
   },
   mounted() {
     if (this.$store.getters.tracker_types.length == 0) {
       this.refresh();
     }
-    this.tracker=(document.getElementById('sel_trk').value)||"";
   }
+  // watch: {
+  //   get_trackers: function() {
+  //     this.$nextTick(() => {
+  //       let sel = document.getElementById("sel_trk").options;
+  //       // console.log(this.rtracker_id);
+  //       if (sel.length > 0 && this.rtracker_id != "")
+  //         for (let t of sel) {
+  //           console.log(
+  //             "t tracker_id:" +
+  //               typeof t._value.tracker_id +
+  //               typeof this.rtracker_id
+  //           );
+  //           if (t._value.tracker_id == this.rtracker_id) {
+  //             document.getElementById("sel_trk").value = t._value;
+  //             console.log(document.getElementById("sel_trk").value);
+  //           }
+  //         }
+  //       console.log(sel);
+  //     });
+  //   }
+  // }
 };
 </script>
 

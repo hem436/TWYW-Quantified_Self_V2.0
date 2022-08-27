@@ -20,34 +20,35 @@ const routes = [{
         }
       },
       {
+        path: '/tracker/add/',
+        name: 'tracker.add',
+        component: () => import('@/components/AddTracker')
+      },
+      {
+        path: '/tracker/update/:id',
+        name: 'tracker.update',
+        component: () => import('@/components/UpdateTracker')
+      },
+      {
         path: '/tracker/:id',
         name: 'dash.tracker',
         component: () => import('@/components/DashTracker')
       },
       {
-        path: '/tracker/add',
-        name: 'tracker.add',
-        component: () => import('@/components/AddTracker')
-      },
-      {
-        path: '/tracker/update',
-        name: 'tracker.update',
-        component: () => import('@/components/UpdateTracker')
-      },
-      {
         path:'/log/add',
         name: 'log.add',
-        component: () => import('@/components/AddLog')
+        redirect:'/log/null'
+      },
+
+      {
+        path:'/log/update/:id',
+        name: 'log.update',
+        component: () => import('@/components/UpdateLog')
       },
       {
         path:'/log/:id',
         name: 'log.add.id',
         component: () => import('@/components/AddLog')
-      },
-      {
-        path:'/log/update/:id',
-        name: 'log.update',
-        component: () => import('@/components/UpdateLog')
       }
     ]
   },

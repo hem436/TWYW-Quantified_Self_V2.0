@@ -37,10 +37,10 @@ def password_valid(p):
     b=(" " not in p)
     return b
 def tracker_name_valid(tname):
-    b=(" " not in tname)
+    b= type(tname) is str
     return b
 def tracker_type_valid(ttype):
-    b= ttype in ("Integer","Numeric","Multi-choice","Time")
+    b= ttype in ("Integer","Numeric","Multiple-choice","Time")
     return b
 
 
@@ -169,10 +169,8 @@ class TrackerApi(Resource):
             tset=tdata["settings"]
             tnv=tracker_name_valid(tname)
             ttv=tracker_type_valid(ttype)
-            if ttype!="Multi-choice":
+            if ttype!="Multiple-choice":
                 tset=""
-            elif ("," not in tset):
-                 return "tracker settings should be given for type multi-choice which are options that must be separated with comma.",400
             if tnv and ttv:
                 tobj=tracker(user_id=int(uid),name=str(tname),desc=str(tdesc),type=str(ttype),settings=str(tset))
                 db.session.add(tobj)
@@ -197,7 +195,7 @@ class TrackerApi(Resource):
                 return "Tracker id not found",404
             if ttype!=q.first().type:
                 pass
-            if ttype!="Multi-choice":
+            if ttype!="Multiple-choice":
                     tset=""
             elif ("," not in tset):
                         return "tracker settings should be given for type multi-choice which are options that must be separated with comma.",400
@@ -220,7 +218,7 @@ class TrackerApi(Resource):
 
     @auth_token_required
     def delete(self,tracker_id):
-        tobj=tracker.query.get(tracker_id)
+        tobj=tracker.query.get(int(tracker_id))
         tlogs=log.query.filter(log.tracker_id==tracker_id).all()
         db.session.delete(tobj)
         db.session.commit()
@@ -231,7 +229,7 @@ class LogApi(Resource):
     def get(self,log_id):
         try:
             logobj=log.query.get(int(log_id));
-            if log:
+            if logobj:
                 return marshal(logobj,log_fields)
             else:
                 return "NOT FOUND",404
@@ -240,7 +238,23 @@ class LogApi(Resource):
 
     @auth_token_required
     def put(self,log_id):
-        pass
+        try:
+            if (log_id,) not in db.session.query(log.log_id).all():
+                return 'log_id_not_found',400
+            l=log.query.get(log_id)
+            t=l.parent
+            ldata=request.json
+            lval=ldata['log_value']
+            lnote=ldata['log_note']
+            ldatetime=datetime.strptime(ldata['log_datetime'],'%d/%b/%Y, %H:%M:%S.%f')
+            if t.lastupdate==None or t.lastupdate<ldatetime:
+              t.lastupdate=ldatetime
+            db.session.query(log).filter(log.log_id==log_id).update({'log_value':lval,'note':lnote,'log_datetime':ldatetime})
+            db.session.commit()
+            return "OK",200
+        except Exception as e:
+            print(e)
+            return "Internal Server Error",500
     @auth_token_required
     def delete(self,log_id):
         try:
@@ -264,22 +278,22 @@ class LogApi(Resource):
 
     @auth_token_required
     def post(self):
-        # try:
+        try:
             ldata=request.json
             ltid=ldata["tracker_id"]
             lval=ldata['log_value']
             lnote=ldata['log_note']
-            ldatetime=log_datetime=datetime.strptime(ldata['log_datetime'],'%d/%b/%Y, %H:%M:%S.%f')
+            ldatetime=datetime.strptime(ldata['log_datetime'],'%d/%b/%Y, %H:%M:%S.%f')
             #Validation
             #----------
             t=tracker.query.get(ltid);
-            if t.lastupdate==None or t.lastupdate<log_datetime:
-                t.lastupdate=log_datetime
+            if t.lastupdate==None or t.lastupdate<ldatetime:
+                t.lastupdate=ldatetime
             lobj=log(tracker_id=ltid,log_datetime=ldatetime,note=lnote,log_value=lval)
             db.session.add(lobj)
             db.session.commit()
             return "OK",200
-        # except Exception as e:
+        except Exception as e:
             print(e)
             return "INTERNAL SERVER ERROR ",500
 

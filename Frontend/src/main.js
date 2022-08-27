@@ -12,9 +12,42 @@ import store from './store'
 import VueCookies from 'vue-cookies'
 import Ciphers from './assets/ciphers.js'
 
-
 Vue.use(VueCookies);
 Vue.prototype.$Ciphers = Ciphers;
+Vue.filter("date_format", function(value) {
+  let currentdate = new Date(value);
+  let mstr = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ];
+  let datetime =
+    currentdate.getDate() +
+    "/" +
+    mstr[currentdate.getMonth()] +
+    "/" +
+    currentdate.getFullYear() +
+    ", " +
+    currentdate.getHours() +
+    ":" +
+    currentdate.getMinutes() +
+    ":" +
+    currentdate.getSeconds() +
+    "." +
+    currentdate.getMilliseconds();
+  // if(!value) return ''
+  // value = value.toString()
+  return datetime;
+});
 
 Vue.config.productionTip = false
 
