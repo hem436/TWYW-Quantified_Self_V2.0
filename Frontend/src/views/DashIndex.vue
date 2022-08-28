@@ -21,12 +21,12 @@
               <button
                 class="btn btn-toggle align-items-left rounded collapsed"
                 data-bs-toggle="collapse"
-                data-bs-target="#home-collapse"
+                data-bs-target="#dashboard-collapse"
                 aria-expanded="true"
               >
-                Home
+                Dashboard
               </button>
-              <div class="collapse show" id="home-collapse">
+              <div class="collapse" id="dashboard-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                   <li><router-link to="/dashboard">Overview</router-link></li>
                   <li><a href="#" class="link-dark rounded">Updates</a></li>
@@ -36,34 +36,16 @@
             </li>
             <li class="mb-1">
               <button
-                class="btn btn-toggle align-items-left rounded collapsed"
-                data-bs-toggle="collapse"
-                data-bs-target="#dashboard-collapse"
-                aria-expanded="false"
-              >
-                Dashboard
-              </button>
-              <div class="collapse" id="dashboard-collapse">
-                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                  <li><a href="#" class="link-dark rounded">Overview</a></li>
-                  <li><a href="#" class="link-dark rounded">Weekly</a></li>
-                  <li><a href="#" class="link-dark rounded">Monthly</a></li>
-                  <li><a href="#" class="link-dark rounded">Annually</a></li>
-                </ul>
-              </div>
-            </li>
-            <li class="mb-1">
-              <button
                 class="btn btn-toggle align-items-center rounded collapsed"
                 data-bs-toggle="collapse"
                 data-bs-target="#tracker-collapse"
-                aria-expanded="false"
+                aria-expanded="true"
               >
                 Trackers
               </button>
               <div class="collapse" id="tracker-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                  <li><a href="#" class="link-dark rounded">New</a></li>
+                  <li><router-link to="/tracker/add">New</router-link></li>
                   <li><a href="#" class="link-dark rounded">Export</a></li>
                   <li><a href="#" class="link-dark rounded">Import</a></li>
                   <!-- <li><a href="#" class="link-dark rounded">Generate report</a></li> -->
@@ -75,7 +57,7 @@
                 class="btn btn-toggle align-items-center rounded collapsed"
                 data-bs-toggle="collapse"
                 data-bs-target="#log-collapse"
-                aria-expanded="false"
+                aria-expanded="true"
               >
                 Logs
               </button>

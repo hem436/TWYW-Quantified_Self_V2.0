@@ -93,34 +93,36 @@ export default {
         });
     },
     del(id) {
-      let self = this;
-      fetch("http://localhost:5000/api/log/" + id, {
-        method: "DELETE",
-        headers: {
-          "A-T":
-            self.$Ciphers
-              .decode("Vigenere Cipher", self.$cookies.get("user") || "", [
-                "Pwd"
-              ])
-              .split(";")[2] || ""
-        }
-      })
-        .then(response => {
-          // console.log(response)
-          if (response.ok && !response.redirected) {
-            window.location.reload();
-            return "";
-          } else {
-            throw {
-              e_code: response.status,
-              error: response.statusText
-            };
+      if (window.confirm("Want to delete this log?")) {
+        let self = this;
+        fetch("http://localhost:5000/api/log/" + id, {
+          method: "DELETE",
+          headers: {
+            "A-T":
+              self.$Ciphers
+                .decode("Vigenere Cipher", self.$cookies.get("user") || "", [
+                  "Pwd"
+                ])
+                .split(";")[2] || ""
           }
         })
-        .catch(rej => {
-          // console.log(rej)
-          console.log(rej.error + " kindly re-login");
-        });
+          .then(response => {
+            // console.log(response)
+            if (response.ok && !response.redirected) {
+              window.location.reload();
+              return "";
+            } else {
+              throw {
+                e_code: response.status,
+                error: response.statusText
+              };
+            }
+          })
+          .catch(rej => {
+            // console.log(rej)
+            console.log(rej.error + " kindly re-login");
+          });
+      }
     }
   },
   watch: {
@@ -178,7 +180,12 @@ export default {
                   // displayFormats: {
                   //       minute: 'HH:MM'
                   //   },
-                  // 	ticks:{source:'auto'}
+                },
+                ticks: {
+                  maxRotation: 0,
+                  major: {
+                    enabled: true
+                  }
                 }
               },
               y: {

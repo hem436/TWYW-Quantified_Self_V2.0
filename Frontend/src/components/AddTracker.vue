@@ -107,6 +107,9 @@ export default {
       } else if (this.type.length == 0) {
         this.error = "Select correct tracker type";
         return;
+      } else if (this.type == "Multiple-choice" && this.t_option.length <= 1) {
+        this.error = "options should be more than 1";
+        return;
       } else {
         this.error = "";
       }
@@ -136,6 +139,9 @@ export default {
             alert("Added");
             this.$router.go();
           } else {
+            if (response.code == "401") {
+              this.$router.push("/login");
+            }
             throw {
               e_code: response.status,
               error: response.statusText

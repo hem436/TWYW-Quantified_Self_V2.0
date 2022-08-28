@@ -171,6 +171,8 @@ class TrackerApi(Resource):
             ttv=tracker_type_valid(ttype)
             if ttype!="Multiple-choice":
                 tset=""
+            elif tset=="":
+                return "tracker options cannot be null for multiple choice",400
             if tnv and ttv:
                 tobj=tracker(user_id=int(uid),name=str(tname),desc=str(tdesc),type=str(ttype),settings=str(tset))
                 db.session.add(tobj)
@@ -188,20 +190,17 @@ class TrackerApi(Resource):
         try:
             pdata=request.json
             tname=pdata["modified_tracker_name"]
-            ttype=pdata["modified_tracker_type"]
+            ttype=pdata["tracker_type"]
             tset=pdata["modified_tracker_settings"]
             q=db.session.query(tracker).filter(tracker.tracker_id==tracker_id)
             if q.first()==None:
                 return "Tracker id not found",404
             if ttype!=q.first().type:
-                pass
+                return "Tracker type cannot be changed",400
             if ttype!="Multiple-choice":
                     tset=""
-            elif ("," not in tset):
-                        return "tracker settings should be given for type multi-choice which are options that must be separated with comma.",400
             update_dict={"name":tname,
             "desc":pdata["modified_tracker_description"],
-            "type":ttype,
             "settings":tset,
             }
             if tracker_name_valid(tname) and tracker_type_valid(ttype):
@@ -212,7 +211,8 @@ class TrackerApi(Resource):
             elif not tracker_type_valid(ttype):
                 return "tracker type not valid",400
             return marshal(q.first(),tracker_fields)
-        except:
+        except Exception as e:
+            print(e)
             return "Internal Server Error",500
 
 
