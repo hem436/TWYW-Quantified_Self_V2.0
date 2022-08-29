@@ -11,8 +11,10 @@ import router from './router'
 import store from './store'
 import VueCookies from 'vue-cookies'
 import Ciphers from './assets/ciphers.js'
+import * as echarts from './assets/echarts.js'
 
 Vue.use(VueCookies);
+Vue.prototype.$echarts= echarts;
 Vue.prototype.$Ciphers = Ciphers;
 Vue.filter("date_format", function(value) {
   let currentdate = new Date(value);

@@ -1,9 +1,10 @@
 <template>
   <div class="trackdetail">
     <div class="row">
-      <div class="col-8 offset-2">
+      <div class="col-8 offset-2 justify-content-center">
+        <canvas id="myChart" width="900" height="500"></canvas>
+
         <div class="h4 justify-content-center">Log Entries</div>
-        <canvas id="myChart" width="200" height="100"></canvas>
         <table class="table">
           <thead>
             <tr>
@@ -46,18 +47,23 @@
 </template>
 
 <script>
-import Chart from "chart.js/auto";
-import "chartjs-adapter-date-fns";
+// import Chart from "chart.js/auto";
+// import "chartjs-adapter-date-fns";
 export default {
   data() {
     return {
       tracker_id: this.$route.params.id,
+      tracker: "",
       logs: []
     };
   },
   methods: {
     refresh() {
+      console.log(this);
       let self = this;
+      if (this.logs.length != 0) {
+        this.logs = [];
+      }
       fetch("http://localhost:5000/api/tracker/" + this.tracker_id, {
         method: "GET",
         headers: {
@@ -82,6 +88,8 @@ export default {
         })
         .then(data => {
           // console.log(data)
+          this.tracker = data;
+
           for (let i of data.log_objects) {
             self.logs.push(i);
           }
@@ -109,7 +117,8 @@ export default {
           .then(response => {
             // console.log(response)
             if (response.ok && !response.redirected) {
-              window.location.reload();
+              this.refresh();
+              // window.location.reload();
               return "";
             } else {
               throw {
@@ -127,73 +136,114 @@ export default {
   },
   watch: {
     logs: function(n) {
-      // console.log(o);
+      console.log(this);
       if (n.length > 0) {
-        const ctx = document.getElementById("myChart");
-        let xlabel = [];
-        let ylabel = [];
+        var xlabel = [];
+        var ylabel = [];
         for (let i of this.logs) {
           xlabel.push(i.log_datetime);
           ylabel.push(i.log_value);
         }
-        xlabel.sort(function(a, b) {
-          let dateA = new Date(a);
-          let dateB = new Date(b);
-          return dateA - dateB;
-        });
-        // console.log(xlabel);
-        // console.log(ylabel);
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: xlabel,
-            datasets: [
-              {
-                label: "# val",
-                data: ylabel,
-                backgroundColor: [
-                  "rgba(255, 99, 132, 0.2)",
-                  "rgba(54, 162, 235, 0.2)",
-                  "rgba(255, 206, 86, 0.2)",
-                  "rgba(75, 192, 192, 0.2)",
-                  "rgba(153, 102, 255, 0.2)",
-                  "rgba(255, 159, 64, 0.2)"
-                ],
-                borderColor: [
-                  "rgba(255, 99, 132, 1)",
-                  "rgba(54, 162, 235, 1)",
-                  "rgba(255, 206, 86, 1)",
-                  "rgba(75, 192, 192, 1)",
-                  "rgba(153, 102, 255, 1)",
-                  "rgba(255, 159, 64, 1)"
-                ],
-                borderWidth: 1
-              }
-            ]
+        var echarts = this.$echarts;
+        var chartDom = document.getElementById("myChart");
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+          title: {
+            text: "Log Values",
+            left: "center"
           },
-          options: {
-            scales: {
-              x: {
-                type: "time",
-                time: {
-                  unit: "minute"
-                  // displayFormats: {
-                  //       minute: 'HH:MM'
-                  //   },
-                },
-                ticks: {
-                  maxRotation: 0,
-                  major: {
-                    enabled: true
-                  }
-                }
+          grid: {
+            bottom: 100
+          },
+          toolbox: {
+            feature: {
+              dataZoom: {
+                yAxisIndex: "none"
               },
-              y: {
-                beginAtZero: true
+              restore: {},
+              saveAsImage: {}
+            }
+          },
+          tooltip: {
+            trigger: "axis",
+            axisPointer: {
+              type: "cross",
+              animation: false,
+              label: {
+                backgroundColor: "#505765"
               }
             }
-          }
-        });
+          },
+          legend: {
+            data: ["Flow"],
+            left: 10
+          },
+          dataZoom: [
+            {
+              show: true,
+              realtime: true,
+              start: 0,
+              end: 100
+            },
+            {
+              type: "inside",
+              realtime: true,
+              start: 0,
+              end: 100
+            }
+          ],
+          xAxis: [
+            {
+              type: "category",
+              boundaryGap: false,
+              axisLine: { onZero: false },
+              // prettier-ignore
+              data: xlabel.map(function (str) {
+                    return str.replace(' ', '\n').slice(0,-7);
+                })
+            }
+          ],
+          yAxis: [
+            {
+              name: "Flow(m^3/s)",
+              type: "value"
+            }
+          ],
+          series: [
+            {
+              name: "Flow",
+              type: "line",
+              // areaStyle: {},
+              lineStyle: {
+                width: 1
+              },
+              // emphasis: {
+              //   focus: "series"
+              // },
+              // markArea: {
+              //   silent: true,
+              //   itemStyle: {
+              //     opacity: 0.3
+              //   },
+              //   data: [
+              //     [
+              //       {
+              //         xAxis: "2009/9/12\n7:00"
+              //       },
+              //       {
+              //         xAxis: "2009/9/22\n7:00"
+              //       }
+              //     ]
+              //   ]
+              // },
+              // prettier-ignore
+              data:ylabel
+            }
+          ]
+        };
+
+        option && myChart.setOption(option);
       }
     }
   },
