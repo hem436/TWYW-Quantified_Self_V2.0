@@ -1,0 +1,8 @@
+User_id,User_name,Email,Number_of_trackers
+2,hem436,hem436@gmail.com,4
+
+S.N,Last_updated,Tracker_id,Tracker_name,Tracker_description,Tracker_type,Tracker_settings
+1,2022-08-30 16:28:42.455000,3,Tracker_1,Description,Integer,
+2,2022-08-27 17:10:57.785000,4,Tracker_2,Description for t2,Numeric,
+3,2022-08-27 12:58:51.135000,5,Tracker_3,Description for t3,Time,
+4,2022-08-27 17:12:53.869000,6,Tracker_4,Description for t4,Multiple-choice,"yes,no,idk"

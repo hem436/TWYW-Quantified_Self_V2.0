@@ -8,10 +8,12 @@ from database import User,tracker,log,user_datastore,db
 #==============================Business Logic====================================
 #------------Login-Logout-------------
 from application import task
+
 @app.route('/hello')
 def hello():
-    job=task.just_say_hello.delay("hemant")
-    return str(job),200
+    # job=task.just_say_hello.delay("hemant")
+    task.export_tracker()
+    return "OK",200
 
 @login_manager.user_loader
 def load_user(id):
