@@ -1,6 +1,6 @@
 from flask import redirect, render_template, request
 from flask_restful  import Resource,fields,marshal_with,marshal
-from flask_security import auth_required,auth_token_required,hash_password,login_user,verify_password
+from flask_security import auth_required,auth_token_required,hash_password,login_user,verify_password,current_user
 from database import User,tracker,log,user_datastore,db
 import bcrypt
 from datetime import datetime
@@ -61,7 +61,8 @@ class LoginApi(Resource):
                     dbuser=User.query.filter(User.username==username).first()
                     if verify_password(pwd,dbuser.password):
                         print(login_user(dbuser,remember=True,authn_via=["password"]))
-                        return {**marshal(dbuser,user_fields),"auth_token":dbuser.get_auth_token()},200
+                        return {**marshal(dbuser,user_fields),
+                        "auth_token":dbuser.get_auth_token()},200
                     else:
                         print("invalid_password")
                 else:
@@ -72,7 +73,7 @@ class LoginApi(Resource):
 class UserApi(Resource):
     @auth_token_required
     def get(self,username):
-        # try:
+        try:
             if username=="*":
                 user=User.query.all()
             elif " " not in username:
@@ -85,7 +86,7 @@ class UserApi(Resource):
                 return marshal(user,user_fields),200
             else:
                 return "User not found",404
-        # except:
+        except:
             return "Internal Server Error",500
 
     @auth_token_required
@@ -104,7 +105,8 @@ class UserApi(Resource):
                 uname_valid=username_valid(modified_username)
                 pass_valid=password_valid(modified_password)
                 if uname_valid and pass_valid:
-                    q.update({"username":str(modified_username),"password":str(modified_password)})
+                    q.update({"username":str(modified_username),
+                    "password":str(modified_password)})
                     db.session.commit()
                 elif not uname_valid:
                     return "Modified Username is invalid",400
@@ -133,7 +135,8 @@ class UserApi(Resource):
             if data:
                 if username_valid(data['username']) and password_valid(data['password']):
                     # db.session.add(new_user)
-                    user_datastore.create_user(username=str(data['username']),email=str(data['username'])+"@gmail.com",password=hash_password(data['password']))
+                    user_datastore.create_user(username=str(data['username']),
+                    email=str(data['username'])+"@gmail.com",password=hash_password(data['password']))
                     dbuser=user_datastore.find_user(username=str(data['username']))
                     login_user(dbuser)
                     db.session.commit()
@@ -150,10 +153,11 @@ class TrackerApi(Resource):
     @auth_token_required
     def get(self,tracker_id):
         try:
-
             trk=tracker.query.get(int(tracker_id))
             if trk==None:
                 return "Tracker id not found",404
+            if trk.user_id!=current_user.id:
+                return "not authorized to access this tracker",400
             return {**marshal(trk,tracker_fields),"log_objects":marshal(trk.logs,log_fields)}
         except:
             return "Internal Server Error",500
@@ -169,19 +173,21 @@ class TrackerApi(Resource):
             tset=tdata["settings"]
             tnv=tracker_name_valid(tname)
             ttv=tracker_type_valid(ttype)
+            if uid!=current_user.id:
+                return "Not authorized to add tracker to this user",400
             if ttype!="Multiple-choice":
                 tset=""
             elif tset=="":
                 return "tracker options cannot be null for multiple choice",400
-            if tnv and ttv:
-                tobj=tracker(user_id=int(uid),name=str(tname),desc=str(tdesc),type=str(ttype),settings=str(tset))
-                db.session.add(tobj)
-                db.session.commit()
-                return marshal(tobj,tracker_fields),200
-            elif not tnv:
+            if not tnv:
                 return "tracker name not valid",400
             elif not ttv:
                 return "tracker type not valid",400
+            tobj=tracker(user_id=int(uid),name=str(tname),desc=str(tdesc),
+            type=str(ttype),settings=str(tset))
+            db.session.add(tobj)
+            db.session.commit()
+            return marshal(tobj,tracker_fields),200
         except:
             return "Internal Server Error",500
 
@@ -193,6 +199,8 @@ class TrackerApi(Resource):
             ttype=pdata["tracker_type"]
             tset=pdata["modified_tracker_settings"]
             q=db.session.query(tracker).filter(tracker.tracker_id==tracker_id)
+            if q.first().user_id!=current_user.id:
+                return "Not authorized to access this tracker",400
             if q.first()==None:
                 return "Tracker id not found",404
             if ttype!=q.first().type:
@@ -203,14 +211,13 @@ class TrackerApi(Resource):
             "desc":pdata["modified_tracker_description"],
             "settings":tset,
             }
-            if tracker_name_valid(tname) and tracker_type_valid(ttype):
-                q.update(update_dict)
-                db.session.commit()
-            elif not tracker_name_valid(tname):
+            if not tracker_name_valid(tname):
                 return "name not valid",400
             elif not tracker_type_valid(ttype):
                 return "tracker type not valid",400
-            return marshal(q.first(),tracker_fields)
+            q.update(update_dict)
+            db.session.commit()
+            return marshal(q.first(),tracker_fields),200
         except Exception as e:
             print(e)
             return "Internal Server Error",500
@@ -219,6 +226,8 @@ class TrackerApi(Resource):
     @auth_token_required
     def delete(self,tracker_id):
         tobj=tracker.query.get(int(tracker_id))
+        if tobj.user_id!=current_user.id:
+            return "Not authorized to access this tracker",400
         tlogs=log.query.filter(log.tracker_id==tracker_id).all()
         db.session.delete(tobj)
         db.session.commit()
@@ -228,7 +237,9 @@ class LogApi(Resource):
     @auth_token_required
     def get(self,log_id):
         try:
-            logobj=log.query.get(int(log_id));
+            logobj=log.query.get(int(log_id))
+            if logobj.parent.user_id!=current_user.id:
+                return "Not authorized to access this log",400
             if logobj:
                 return marshal(logobj,log_fields)
             else:
@@ -241,15 +252,18 @@ class LogApi(Resource):
         try:
             if (log_id,) not in db.session.query(log.log_id).all():
                 return 'log_id_not_found',400
-            l=log.query.get(log_id)
+            l=log.query.get(int(log_id))
             t=l.parent
+            if t.user_id!=current_user.id:
+                return "Not authorized to access this log",400
             ldata=request.json
             lval=ldata['log_value']
             lnote=ldata['log_note']
             ldatetime=datetime.strptime(ldata['log_datetime'],'%d/%b/%Y, %H:%M:%S.%f')
             if t.lastupdate==None or t.lastupdate<ldatetime:
               t.lastupdate=ldatetime
-            db.session.query(log).filter(log.log_id==log_id).update({'log_value':lval,'note':lnote,'log_datetime':ldatetime})
+            db.session.query(log).filter(log.log_id==log_id).update({'log_value':lval,
+            'note':lnote,'log_datetime':ldatetime})
             db.session.commit()
             return "OK",200
         except Exception as e:
@@ -261,6 +275,8 @@ class LogApi(Resource):
             l=log.query.get(int(log_id))
             if l:
                 t=l.parent
+                if t.user_id!=current_user.id:
+                    return "Not authorized to access this log",400
                 db.session.delete(l)
                 if t.lastupdate==l.log_datetime:
                   lastlog=log.query.filter(log.tracker_id==t.tracker_id).order_by(log.log_datetime.desc()).first()
@@ -287,6 +303,8 @@ class LogApi(Resource):
             #Validation
             #----------
             t=tracker.query.get(ltid);
+            if t.user_id!=current_user.id:
+                return "Not authorized to add log to this tracker",400
             if t.lastupdate==None or t.lastupdate<ldatetime:
                 t.lastupdate=ldatetime
             lobj=log(tracker_id=ltid,log_datetime=ldatetime,note=lnote,log_value=lval)
