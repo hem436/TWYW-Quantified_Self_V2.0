@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/main.css">
+    <title>QuantifiedSelf</title>
+  </head>
+
+  <body>
+
+    <div class="row">
+      <div class="col-sm-3 d-flex justify-content-center">
+        <span class="align-self-center"><img src='/static/userimg.png' width="40px" height="40px" />{{user.username}}</span>
+      </div>
+      <div class="col-sm-6 d-flex justify-content-center">
+        <h2>TWYW-Quantified Self</h2>
+        <h6 class="m-2 text-muted"> V2.0</h6>
+      </div>
+
+      <div class="col-sm-3 d-flex justify-content-center">
+        <h5 align="center">{{datetime.now().strftime('%d/%b/%Y, %H:%M:%S')}}</h5>
+      </div>
+    </div><br><br>
+    <div class="row">
+<div class="col-sm-6 offset-3">
+
+  <h4 class=" d-flex justify-content-between"><span>User id : </span><span>{{user.id}}</span></h4>
+  <h4 class=" d-flex justify-content-between"><span>Username : </span><span>{{user.username}}</span></h4>
+  <h4 class=" d-flex justify-content-between"><span>Email : </span><span>{{user.email}}</span></h4>
+  <h4 class=" d-flex justify-content-between"><span>Active : </span><span>{{user.active}}</span></h4>
+  <!-- <h4>Roles : {{user.roles}}</h4> -->
+</div>
+    </div><br>
+    <div class="pagebreak"></div>
+    <br>
+    {% if user.trackers %}
+    {% for tracker in user.trackers %}
+
+
+    <div class="row main ">
+      <div class="col-8 offset-2">
+        <h4>Tracker unique id= {{tracker.tracker_id}}</h4>
+        <table class='table table-bordered tracker_table'>
+          <thead>
+            <tr>
+              <th>S.no</th>
+              <th>Tracker name</th>
+              <th>Tracker Last update</th>
+              <th>Tracker description</th>
+              <th>Tracker type</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <td>{{loop.index}}</td>
+              <td>{{tracker.name}}</td>
+              <td>{% if tracker.lastupdate %}({{datetime.strftime(tracker.lastupdate,'%d/%m/%y - %H:%M:%S')}}){% else %} (-/-/- -:-:-) {% endif %}</td>
+              <td>{{tracker.desc}}</td>
+              <td>{{tracker.type}}</td>
+            </tr>
+
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-8 offset-2">
+        <div class="h4 justify-content-center">Log Entries</div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>S.no</th>
+              <th>Timestamp</th>
+              <th>Value</th>
+              <th>Note</th>
+            </tr>
+            {% for l in tracker.logs %}
+            <tr>
+              <td>{{loop.index}}</td>
+              <td>{{l.log_datetime.strftime('(%d/%b/%Y, %H:%M:%S)')}}</td>
+              <td>{{l.log_value}}</td>
+              <td>{{l.note}}</td>
+
+            </tr>
+            {% endfor %}
+          </thead>
+        </table>
+        <div class="col-sm-8 col-xl-7 d-flex justify-content-center">
+          <img class="img-fluid" src="static/{{tracker.name}}_{{tracker.tracker_id}}.png" alt="No data for specified duration">
+        </div>
+      </div>
+    </div>
+    <div class="pagebreak"></div>
+{% endfor %}
+{% else %}
+<div class="d-flex justify-content-center">
+  No data for you.
+</div>
+{% endif %}
+  </body>
+
+</html>
