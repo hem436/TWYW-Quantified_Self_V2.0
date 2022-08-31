@@ -138,7 +138,6 @@ export default {
   watch: {
     tracker: function(n) {
       if (n.log_objects.length > 0) {
-        console.log(mychart);
         mychart.bind(this)();
       }
     }
@@ -168,7 +167,7 @@ a {
 
 .chart {
   position: relative;
-  height: 60vh;
+  height: 70vh;
   overflow: hidden;
 }
 </style>
