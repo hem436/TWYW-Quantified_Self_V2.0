@@ -7,13 +7,15 @@ from main import login_manager,login_required,current_user,datetime
 from database import User,tracker,log,user_datastore,db
 #==============================Business Logic====================================
 #------------Login-Logout-------------
+from flask_security import hash_password,verify_password,login_user
 from application import task
 
 @app.route('/hello')
 def hello():
     # job=task.just_say_hello.delay("hemant")
-    task.export_tracker()
-    return "OK",200
+    job2=task.export_tracker.delay(current_user.id)
+    job3=task.gen_report.delay(current_user.id)
+    return str(job3.wait()),200
 
 @login_manager.user_loader
 def load_user(id):
@@ -44,9 +46,10 @@ def signup():
     if request.method=='POST':
         uname=request.form.get('username')
         passd=request.form.get('password')
+        email=request.form.get('email')
         if uname not in [i.username for i in User.query.all()]:
             # user=User(username=uname,password=passd,fs_uniquifier=bcrypt.gensalt())
-            user_datastore.create_user(username=uname,email=uname+'@gmail.com', password=hash_password(passd))
+            user_datastore.create_user(username=uname,email=email, password=hash_password(passd))
             # db.session.add(user)
             db.session.commit()
             return login()

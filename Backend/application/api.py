@@ -136,7 +136,7 @@ class UserApi(Resource):
                 if username_valid(data['username']) and password_valid(data['password']):
                     # db.session.add(new_user)
                     user_datastore.create_user(username=str(data['username']),
-                    email=str(data['username'])+"@gmail.com",password=hash_password(data['password']))
+                    email=str(data['email']),password=hash_password(data['password']))
                     dbuser=user_datastore.find_user(username=str(data['username']))
                     login_user(dbuser)
                     db.session.commit()

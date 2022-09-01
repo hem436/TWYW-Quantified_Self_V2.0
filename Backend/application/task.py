@@ -3,11 +3,11 @@ from flask import redirect, render_template,send_from_directory,request,current_
 from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter
 from matplotlib.ticker import MaxNLocator
-from main import login_manager,login_required,current_user,datetime
+from main import current_user,datetime
 from database import User,tracker,log,user_datastore,db
 import numpy as np
-import csv
-from application.worker import celery
+import csv,time
+from main import celery
 from celery.schedules import crontab
 
 # @celery.on_after_finalize.connect
@@ -18,6 +18,7 @@ from celery.schedules import crontab
 def just_say_hello(name):
      print("inside celery task")
      print(f'hello {name}')
+     return f'hello {name}'
 
 
 @celery.task()
@@ -29,12 +30,13 @@ def print_current_time_job():
      print("date and time =", dt_string)
      print("COMPLETE")
 
-# @celery.task()
-def export_tracker():
+@celery.task()
+def export_tracker(id):
     p=os.path
-    user=current_user
+    user=User.query.filter(User.id==id).first()
     if not user:
-        return
+        return "User not found"
+    print(user)
     filename=f'{user.username}.csv'
     filepath=p.normpath(p.join(p.dirname(__file__),
     f'../static/exported_files/{filename}'))
@@ -52,5 +54,15 @@ def export_tracker():
         i+=1
         w.writerow([i,t.lastupdate,t.tracker_id,t.name,t.desc,t.type,t.settings])
     file.close()
-    send_from_directory(filepath,filename)
-    return True
+    time.sleep(2)
+    # send_from_directory(filepath,filename)
+    return filepath
+
+@celery.task()
+def gen_report(id):
+    user=User.query.filter(User.id==id).first()
+    if not user:
+        return "user not found"
+    template=render_template('report.html',user=user,datetime=datetime)
+    # print(template)
+    return template

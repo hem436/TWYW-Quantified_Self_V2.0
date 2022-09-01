@@ -8,8 +8,8 @@ class Config():
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
     SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
-    CELERY_BROKER_URL = "redis://localhost:6379/1"
-    CELERY_RESULT_BACKEND = "redis://localhost:6379/2"
+    CELERY_BROKER_URL = "redis://localhost:6379/0"
+    CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
 
 class LocalDevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///quantified_self_database.sqlite3'

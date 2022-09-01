@@ -24,14 +24,30 @@
       </div>
     </div><br><br>
     <div class="row">
-<div class="col-sm-6 offset-3">
-
+      <div class="col-sm-6 offset-3 h4 bordered">
+        <div class="row">
+          <div class="col-6">User id : </div>
+          <div class="col-6">{{user.id}}</div>
+        </div>
+        <div class="row">
+          <div class="col-6">Username : </div>
+          <div class="col-6">{{user.username}}</div>
+        </div>
+        <div class="row">
+          <div class="col-6">Email : </div>
+          <div class="col-6">{{user.email}}</div>
+        </div>
+        <div class="row">
+          <div class="col-6">Active : </div>
+          <div class="col-6">{{user.active}}</div>
+        </div>
+        <!--
   <h4 class=" d-flex justify-content-between"><span>User id : </span><span>{{user.id}}</span></h4>
   <h4 class=" d-flex justify-content-between"><span>Username : </span><span>{{user.username}}</span></h4>
   <h4 class=" d-flex justify-content-between"><span>Email : </span><span>{{user.email}}</span></h4>
-  <h4 class=" d-flex justify-content-between"><span>Active : </span><span>{{user.active}}</span></h4>
-  <!-- <h4>Roles : {{user.roles}}</h4> -->
-</div>
+  <h4 class=" d-flex justify-content-between"><span>Active : </span><span>{{user.active}}</span></h4> -->
+        <!-- <h4>Roles : {{user.roles}}</h4> -->
+      </div>
     </div><br>
     <div class="pagebreak"></div>
     <br>
@@ -96,12 +112,12 @@
       </div>
     </div>
     <div class="pagebreak"></div>
-{% endfor %}
-{% else %}
-<div class="d-flex justify-content-center">
-  No data for you.
-</div>
-{% endif %}
+    {% endfor %}
+    {% else %}
+    <div class="d-flex justify-content-center">
+      No data for you.
+    </div>
+    {% endif %}
   </body>
 
 </html>
