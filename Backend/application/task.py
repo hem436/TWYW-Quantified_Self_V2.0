@@ -1,12 +1,12 @@
 import os
-from flask import redirect, render_template,send_from_directory,request,current_app as app
+from flask import redirect, render_template,send_from_directory,request
 from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter
 from matplotlib.ticker import MaxNLocator
-from main import celery,current_user,datetime
-from database import User,tracker,log,user_datastore,db
+from main import celery,current_user,datetime,app,db
+from database import User,tracker,log,user_datastore
 import numpy as np
-import csv,time
+import csv,time,pdfkit
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from celery.schedules import crontab
@@ -14,11 +14,21 @@ from celery.schedules import crontab
 # @celery.on_after_finalize.connect
 # def setup_periodic_tasks(sender, **kwargs):
 #     sender.add_periodic_task(10.0, print_current_time_job.s(), name='add every 10')
+#------functions-----------------
 
+#------------called_routes-----------------
+
+@app.route('/hello')
+def hello():
+    job=just_say_hello.delay("hemant")
+    # job2=export_tracker.delay(current_user.id)
+    job3=gen_report.delay(current_user.id)
+    return job3.wait(),200
+#-----------celery_tasks-------------
 @celery.task()
 def just_say_hello(name):
      print("inside celery task")
-
+     print(app,db)
      return f'hello {name}'
 
 
@@ -37,18 +47,15 @@ def export_tracker(id):
     user=User.query.filter(User.id==id).first()
     if not user:
         return "User not found"
-    print(user)
     filename=f'{user.username}.csv'
     filepath=p.normpath(p.join(p.dirname(__file__),
     f'../static/exported_files/{filename}'))
-
     file=open(filepath,'w',newline='', encoding='utf-8')
     w=csv.writer(file,lineterminator='\n')
     user_header=['User_id','User_name','Email','Number_of_trackers']
     tracker_header=['S.N','Last_updated','Tracker_id','Tracker_name','Tracker_description','Tracker_type',"Tracker_settings"]
-    w.writerow(user_header)
     w.writerow([user.id,user.username,user.email,len(user.trackers)])
-    w.writerow([])
+    w.writerow([Trackers])
     w.writerow(tracker_header)
     i=0
     for t in user.trackers:
@@ -65,5 +72,6 @@ def gen_report(id):
     if not user:
         return "user not found"
     template=render_template('report.html',user=user,datetime=datetime)
-    # print(template)
-    return template
+    print(type(template))
+    pdfkit.from_string(template,'./exported_files/pdf/out.pdf')
+    return "template"

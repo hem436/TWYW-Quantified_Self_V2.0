@@ -173,7 +173,8 @@ class TrackerApi(Resource):
             tset=tdata["settings"]
             tnv=tracker_name_valid(tname)
             ttv=tracker_type_valid(ttype)
-            if uid!=current_user.id:
+            user=User.query.get(uid)
+            if user.id!=current_user.id:
                 return "Not authorized to add tracker to this user",400
             if ttype!="Multiple-choice":
                 tset=""

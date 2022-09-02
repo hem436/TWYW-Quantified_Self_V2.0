@@ -1,7 +1,5 @@
-#! /bin/sh
 echo "======================================================================"
-echo "Welcome to to the worker. This will setup the local virtual env."
-echo "And then it will start celery worker."
+echo "Welcome to to the smtp setup. This will setup the smtp server."
 echo "Do not rerun other instances"
 echo "----------------------------------------------------------------------"
 if [ -d ".env" ];
@@ -14,5 +12,4 @@ fi
 
 # Activate virtual env
 . .env/bin/activate
-celery -A main.celery worker -l info
-deactivate
+gnome-terminal --tab -- bash -c "~/go/bin/MailHog;exec bash -i"

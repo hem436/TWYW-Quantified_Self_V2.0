@@ -46,8 +46,8 @@ def create_app():
     security = Security(app, user_datastore)
     CORS(app);
     app.app_context().push()
-    return app,api,celery
-app,api,celery=create_app()
+    return app,api,celery,db
+app,api,celery,db=create_app()
 
 #api controllers imports
 from application.api import *

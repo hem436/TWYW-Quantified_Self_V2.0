@@ -8,6 +8,7 @@ dispHour:0,
 dispMin:0,
 dispSec:0,
 timeoutId:null,
+check:'start',
 timer: function() {
   console.log("from timer")
   console.log(this)

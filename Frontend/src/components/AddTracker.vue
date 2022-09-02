@@ -137,7 +137,6 @@ export default {
         .then(response => {
           if (response.ok && !response.redirected) {
             alert("Added");
-            this.$router.go();
           } else {
             if (response.code == "401") {
               this.$router.push("/login");

@@ -31,6 +31,7 @@
               >Edit</router-link
             >
             <a @click="del_trk(t.tracker_id)" class="btn btn-primary">Delete</a>
+            <a @click="obj_to_csv(t)" class="btn">export</a>
           </div>
         </div>
       </div>
@@ -39,6 +40,7 @@
 </template>
 
 <script>
+import downloadBlob from "@/assets/utils.js";
 export default {
   data() {
     return {
@@ -112,6 +114,22 @@ export default {
             this.$router.push("/login"); //remember
           });
       }
+    },
+    obj_to_csv(objArray) {
+      let array = [["Fields", "values\r\n"]];
+      array =
+        array +
+        Object.entries(objArray) // escape double colons
+          .map(v => [v[0] + "," + `"${v[1]}"`])
+          .slice(0, 7) // quote it
+          .join("\r\n"); // comma-separated
+
+      console.log(array);
+      downloadBlob(
+        array,
+        `"${objArray.tracker_name}.csv"`,
+        "text/csv;charset=utf-8;"
+      );
     }
   },
   mounted() {

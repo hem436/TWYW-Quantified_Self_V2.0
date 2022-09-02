@@ -18,13 +18,6 @@ def load_user(id):
     # print("user in load user=",u)
     return u
 
-@app.route('/hello')
-def hello():
-    with app.app_context():
-        job=task.just_say_hello.delay("hemant")
-    # job2=task.export_tracker.delay(current_user.id)
-    # job3=task.gen_report.delay(current_user.id)
-    return str(job.wait()),200
 
 #-------------------------
 @app.route('/', methods=['GET', 'POST'])

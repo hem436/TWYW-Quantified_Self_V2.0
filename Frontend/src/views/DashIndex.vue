@@ -110,16 +110,22 @@
               >
                 Refresh
               </button>
-              <button type="button" class="btn btn-sm btn-outline-secondary">
-                Export
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                @click="$router.go(-1)"
+              >
+                (==
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                @click="$router.go(1)"
+              >
+                ==)
               </button>
             </div>
-            <button
-              type="button"
-              class="btn btn-sm btn-outline-secondary dropdown-toggle"
-            >
-              <span data-feather="calendar"></span> This week
-            </button>
           </div>
         </div>
         <router-view :key="$route.fullPath" />

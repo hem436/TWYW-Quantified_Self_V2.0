@@ -78,8 +78,8 @@
           </div>
           <div class="col-6">
             <input id="log_val" type="text" :value="time" />
-            <button id="start" @click="stopwatch().start()">Start</button>
-            <button id="reset" @click="stopwatch().reset()">Reset</button>
+            <button id="start" @click="startwatch()">Start</button>
+            <button id="reset" @click="resetwatch().reset()">Reset</button>
           </div>
         </div>
 
@@ -169,8 +169,11 @@ export default {
           self.$router.push("/login"); //remember
         });
     },
-    stopwatch: function() {
-      return stopwatch;
+    startwatch: function() {
+      return stopwatch.start();
+    },
+    resetwatch: function() {
+      return stopwatch.reset();
     },
     postlog() {
       //----Validation------
