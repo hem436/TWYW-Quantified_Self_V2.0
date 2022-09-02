@@ -15,5 +15,5 @@ fi
 
 # Activate virtual env
 . .env/bin/activate
-python3 main.py
+gunicorn main:app --worker-class gevent --bind 127.0.0.1:5000 --workers=4 --reload 
 # deactivate

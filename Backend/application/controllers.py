@@ -1,26 +1,31 @@
-import os
-from flask import redirect, render_template, request,current_app as app
+import os,csv
+from flask import redirect, render_template, request
 from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter
 from matplotlib.ticker import MaxNLocator
-from main import login_manager,login_required,current_user,datetime
 from database import User,tracker,log,user_datastore,db
 #==============================Business Logic====================================
 #------------Login-Logout-------------
-from flask_security import hash_password,verify_password,login_user
+from main import app
+from datetime import datetime
+from flask_security import hash_password,verify_password,login_user,login_required,current_user
 from application import task
 
-@app.route('/hello')
-def hello():
-    # job=task.just_say_hello.delay("hemant")
-    job2=task.export_tracker.delay(current_user.id)
-    job3=task.gen_report.delay(current_user.id)
-    return str(job3.wait()),200
-
+login_manager=app.login_manager
 @login_manager.user_loader
 def load_user(id):
     u=User.query.filter(User.fs_uniquifier==id).one()
-    print("user in load user=",u)
+    # print("user in load user=",u)
+    return u
+
+@app.route('/hello')
+def hello():
+    with app.app_context():
+        job=task.just_say_hello.delay("hemant")
+    # job2=task.export_tracker.delay(current_user.id)
+    # job3=task.gen_report.delay(current_user.id)
+    return str(job.wait()),200
+
 #-------------------------
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -78,7 +83,7 @@ def add_tracker():
     if request.method=='POST':
         try:
             u_id=current_user.id
-            print(u_id)
+            # print(u_id)
             name=request.form.get('name')
             desc=request.form.get('desc')
             type=request.form.get('type')
@@ -133,7 +138,8 @@ def view_tl(tracker_id):
                 llim,hlim,comp='','',''
             if request.form.get('button')=="export_data":
                 filename=request.form.get("filename")
-                file=open(f'/static/exported_files/{filename}.csv','w')
+
+                file=open(f'static/exported_files/{filename}.csv','w')
                 w=csv.writer(file)
         else:
           llim,hlim,comp='','',''
@@ -156,19 +162,20 @@ def view_tl(tracker_id):
                     y.append(datetime.strptime(i.log_value,"%H:%M:%S"))
         plt.plot(x,y,marker='o',color='b',linestyle='--')
         plt.gcf().autofmt_xdate()
-        plt.savefig('/static/chart.png')
+        plt.savefig('static/chart.png')
         if file:
             w.writerow(['Timestamp','Log_value'])
             for i in range(len(x)):
                 w.writerow((x[i],y[i]))
             file.close()
         if len(x)>0:
+
             img='/static/chart.png'
         else:
             img=""
         return render_template('tracker.html',tracker=t,chart=img,filename=filename)
   except Exception as e:
-      print(e,os.getcwd())
+      print(e)
       return(main())
 
 

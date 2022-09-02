@@ -3,11 +3,12 @@ from flask import redirect, render_template,send_from_directory,request,current_
 from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter
 from matplotlib.ticker import MaxNLocator
-from main import current_user,datetime
+from main import celery,current_user,datetime
 from database import User,tracker,log,user_datastore,db
 import numpy as np
 import csv,time
-from main import celery
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from celery.schedules import crontab
 
 # @celery.on_after_finalize.connect
@@ -17,7 +18,7 @@ from celery.schedules import crontab
 @celery.task()
 def just_say_hello(name):
      print("inside celery task")
-     print(f'hello {name}')
+
      return f'hello {name}'
 
 

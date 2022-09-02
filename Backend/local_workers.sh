@@ -14,5 +14,6 @@ fi
 
 # Activate virtual env
 . .env/bin/activate
+gnome-terminal --tab -- bash -c "~/go/bin/MailHog;exec bash -i"
 celery -A main.celery worker -l info
 deactivate

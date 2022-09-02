@@ -2,8 +2,8 @@
 from flask import current_app
 from flask_security import UserMixin,RoleMixin,SQLAlchemyUserDatastore
 from flask_sqlalchemy import SQLAlchemy
-app=current_app
-db=SQLAlchemy(app)
+# app=current_app
+db=SQLAlchemy()
 #tables
 roles_users = db.Table('roles_users',
         db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
