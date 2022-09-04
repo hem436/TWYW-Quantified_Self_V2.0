@@ -15,4 +15,4 @@ fi
 # Activate virtual env
 . .env/bin/activate
 celery -A main.celery worker -l info
-deactivate
+# deactivate

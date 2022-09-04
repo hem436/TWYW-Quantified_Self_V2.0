@@ -1,20 +1,27 @@
 import os
-from flask import redirect, render_template,send_from_directory,request
+from flask import redirect, render_template,send_from_directory,request,url_for
 from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter
 from matplotlib.ticker import MaxNLocator
 from main import celery,current_user,datetime,app,db
 from database import User,tracker,log,user_datastore
 import numpy as np
-import csv,time,pdfkit
+import csv,time
+# from weasyprint import HTML
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from celery.schedules import crontab
+from weasyprint import HTML,CSS
+from pathlib import Path
+import base64
+
 
 # @celery.on_after_finalize.connect
 # def setup_periodic_tasks(sender, **kwargs):
 #     sender.add_periodic_task(10.0, print_current_time_job.s(), name='add every 10')
 #------functions-----------------
+
+
 
 #------------called_routes-----------------
 
@@ -67,11 +74,21 @@ def export_tracker(id):
     return filepath
 
 @celery.task()
-def gen_report(id):
+def gen_report(id,duration=""):
     user=User.query.filter(User.id==id).first()
     if not user:
         return "user not found"
-    template=render_template('report.html',user=user,datetime=datetime)
-    print(type(template))
-    pdfkit.from_string(template,'./exported_files/pdf/out.pdf')
+    arg={}
+    arg['duration']=duration
+    with open("./static/userimg.png", "rb") as image_file:
+        arg["userimg"] = base64.b64encode(image_file.read()).decode('utf-8')
+
+
+    template=render_template('report.html',user=user,datetime=datetime,arg=arg)
+    htmldoc=HTML(string=template, base_url=os.getcwd(),media_type='all')
+
+    css = CSS(string='''* { font-family:'Ubuntu';}''')
+    htmldoc.write_pdf('out.pdf',stylesheets=[css])
     return "template"
+
+gen_report(2)
