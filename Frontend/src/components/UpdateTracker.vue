@@ -5,7 +5,6 @@
         <h1>Update a Tracker</h1>
       </div>
       <div class="col-3 d-flex justify-content-center">
-        <h3><a href="/logout"> Logout</a></h3>
       </div>
     </div>
     <br />
