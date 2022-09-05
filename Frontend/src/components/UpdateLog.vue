@@ -5,7 +5,6 @@
         <h1>Update a log</h1>
       </div>
       <div class="col-3 d-flex justify-content-center">
-        <h3><a href="/logout"> Logout</a></h3>
       </div>
     </div>
     <br />
@@ -33,7 +32,7 @@
           </div>
           <div class="col-6">
             <input
-              type=""
+              type="text"
               id="log_datetime"
               :value="log.log_datetime | date_format"
             />
@@ -312,4 +311,8 @@ export default {
 };
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+input{
+  padding:0px;
+}
+</style>

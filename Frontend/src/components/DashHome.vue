@@ -1,42 +1,49 @@
 <template>
-  <div class="trackers align-items-center">
-    <div class="card-deck row row-cols-lg-3 row-cols-2 justify-content-center">
-      <div class="col m-3" v-for="(t, index) in trackers" :key="t.tracker_id">
-        <div class="card border-success">
-          <div class="card-header align-middle">
-            <h4>{{ index + 1 }}) {{ t.tracker_name }}</h4>
-            <span class="text-muted" v-if="t.last_updated"
-              ><small
-                >Last logged: {{ t.last_updated | date_format }}</small
-              ></span
-            >
-          </div>
-          <div class="card-body h5">
-            <div class="card-title"></div>
-            <div class="card-text">
-              Tracker type: {{ t.tracker_type }}<br /><br />
-              <span v-if="t.tracker_description"
-                >Tracker description: {{ t.tracker_description }}<br
-              /></span>
+<div class="trackers align-items-center">
+    <div class=" row row-cols-lg-3 row-cols-2 justify-content-center">
+        <div class="container col m-2" v-for="(t, index) in trackers" :key="t.tracker_id">
+            <div class="action row g-0">
+                <div class=" col-md-2 d-flex align-items-center">
+                    <div class="group pt-5">
+                        <router-link :to="{ name: 'dash.tracker', params: { id: t.tracker_id } }">
+                            <img src="@/assets/svg/details.svg" alt="Details" data-bs-toggle='tooltip' title="Details"/>
+                        </router-link >
+                        <router-link :to="'/tracker/update/' + t.tracker_id">
+                            <img src="@/assets/svg/edit.svg" alt="Edit" data-bs-toggle="tooltip" title='Edit'/>
+                        </router-link >
+
+                        <a @click="del_trk(t.tracker_id)">
+                            <img src="../assets/svg/delete.svg" alt="delete" data-bs-toggle="tooltip" title='Delete'></a>
+                            <a @click="obj_to_csv(t)">
+                                <img src="../assets/svg/export.svg" alt="export" data-bs-toggle="tooltip" title="Export"></a>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="card border-success">
+                                <div class="card-header align-middle">
+                                    <h4>{{ index + 1 }})
+                                        {{ t.tracker_name }}</h4>
+                                    <span class="text-muted" v-if="t.last_updated">
+                                        <small >Last logged:
+                                            {{ t.last_updated | date_format }}</small >
+                                    </span >
+                                </div>
+                                <div class="card-body h5">
+                                    <div class="card-text">
+
+                                        Tracker type:
+                                        {{ t.tracker_type }}<br/><br/>
+                                        <span v-if="t.tracker_description">Tracker description:
+                                            {{ t.tracker_description }}<br/></span>
+                                    </div>
+                                </div>
+                                <div class="card-footer collapse"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="card-footer collapse">
-            <router-link
-              :to="{ name: 'dash.tracker', params: { id: t.tracker_id } }"
-              ><button type="button" class="btn btn-primary">
-                Details
-              </button></router-link
-            >
-            <router-link :to="'/tracker/update/' + t.tracker_id"
-              >Edit</router-link
-            >
-            <a @click="del_trk(t.tracker_id)" class="btn btn-primary">Delete</a>
-            <a @click="obj_to_csv(t)" class="btn">export</a>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -149,6 +156,14 @@ button {
   box-shadow: 0 6px 8px 0 rgba(0, 0, 0, 0.05), 0 6px 5px 0 rgba(0, 0, 0, 0.05);
   border-radius: 10px;
 }
+img{
+  margin:5px;
+  padding:2px;
+  width:40px;
+  border: 0.1vh solid #555;
+  border-radius: 5px;
+
+}
 
 a {
   text-decoration: none;
@@ -158,15 +173,27 @@ a {
   box-shadow: 0 6px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.1);
   background-color: #00f3ff2e;
   border-radius: 15px;
-  min-height: 15rem;
+  min-height: 20rem;
 }
-
+.group {
+  visibility: hidden;
+  display:block;
+  align-self: baseline;
+  vertical-align: bottom;
+}
 .card:hover {
-  scale: 1.05;
   box-shadow: 0 0 0 2px #d0d0d0;
 }
 
-.card:hover .card-footer {
-  display: inherit;
+.action:hover .group{
+  visibility: visible;
 }
+img:hover{
+  box-shadow: 0 0 0 2px #d0d0d0;
+}
+@media (max-width:700px){
+     .container {
+       min-width:80%;
+     }
+   }
 </style>

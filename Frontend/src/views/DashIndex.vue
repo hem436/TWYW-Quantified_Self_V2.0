@@ -3,16 +3,16 @@
     <div class="row d-flex">
       <nav
         id="sidebarMenu"
-        class="col-md-3 col-lg-2 d-md-block sidebar collapse"
-        style="background-color:#0dcaf0 "
+        class="col-md-3 col-lg-2 d-md-block sidebar border-right collapse"
+
       >
-        <div class="flex-shrink-0 " style="background-color:#a3eeff">
+        <div class="flex-shrink-0 ">
           <a
-            href="/"
-            class="d-flex align-items-center pt-3 pb-2 mb-3 link-dark text-decoration-none border-bottom"
+            href="#"
+            class="d-flex align-items-center pt-4 pb-3  link-dark text-decoration-none border-bottom"
           >
             <svg class="bi me-2" width="30" height="24">
-              <use href="#" />
+              <use href="/static/assets/svg/details.svg" />
             </svg>
             <span class="fs-4 fw-semibold">Menu</span>
           </a>
