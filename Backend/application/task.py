@@ -87,7 +87,15 @@ def hello():
     job=gen_report.delay(current_user.id,duration)
     return "report generating...",200
 
-@app.route('/')
+
+@app.route('/schedule/alert/<int:tid>',methods=['GET','POST'])
+def scheuling(tid):
+    msg=""
+    if request.method=='POST':
+        t=tracker.query.get(tracker_id)
+        data=request.json
+        print(data)
+
 
 #-----------celery_tasks-------------
 @celery.task()
@@ -142,9 +150,9 @@ def gen_report(id,duration=""):
         arg["userimg"] = base64.b64encode(image_file.read()).decode('utf-8')
     #-------pdf----------
     template=render_template('report.html',user=user,datetime=datetime,arg=arg)
-    htmldoc=HTML(string=template, base_url=os.getcwd())
-    css = CSS(string='''* { font-family:'Open Sans';}''')
-    htmldoc.write_pdf('out.pdf',stylesheets=[css])
+    # htmldoc=HTML(string=template, base_url=os.getcwd())
+    # css = CSS(string='''* { font-family:'Open Sans';}''')
+    # htmldoc.write_pdf('out.pdf',stylesheets=[css])
     #-----sending email---
     server_user = "hemantnohack@gmail.com" ####
     pwd = "acrugxtlyiqkkvje"                ##

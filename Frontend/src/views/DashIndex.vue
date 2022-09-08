@@ -1,4 +1,4 @@
-<template>
+false<template>
   <div id="dash container-fluid">
     <div class="row d-flex">
       <nav
@@ -22,7 +22,7 @@
                 class="btn btn-toggle align-items-left rounded collapsed"
                 data-bs-toggle="collapse"
                 data-bs-target="#dashboard-collapse"
-                aria-expanded="true"
+                aria-expanded="false"
               >
                 Dashboard
               </button>
@@ -39,7 +39,7 @@
                 class="btn btn-toggle align-items-center rounded collapsed"
                 data-bs-toggle="collapse"
                 data-bs-target="#tracker-collapse"
-                aria-expanded="true"
+                aria-expanded="false"
               >
                 Trackers
               </button>
@@ -57,7 +57,7 @@
                 class="btn btn-toggle align-items-center rounded collapsed"
                 data-bs-toggle="collapse"
                 data-bs-target="#log-collapse"
-                aria-expanded="true"
+                aria-expanded="false"
               >
                 Logs
               </button>
