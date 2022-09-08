@@ -15,5 +15,10 @@ button{
 a{
   text-decoration: none;
 }
-
+@page {
+        size: A4; /* Change from the default size of A4 */
+        margin: 5mm; /* Set margin on each page */
+        padding-top:5mm;
+        background-color:#8bf7ed38
+      }
 .pagebreak { page-break-after: always; } /* page-break-after works, as well */
