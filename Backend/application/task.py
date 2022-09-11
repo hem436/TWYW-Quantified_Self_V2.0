@@ -17,9 +17,12 @@ from pathlib import Path
 import base64,smtplib,july
 
 
-# @celery.on_after_finalize.connect
-# def setup_periodic_tasks(sender, **kwargs):
-#     sender.add_periodic_task(10.0, print_current_time_job.s(), name='add every 10')
+@celery.on_after_finalize.connect
+def setup_periodic_tasks(sender, **kwargs):
+    for i in tracker.query.all():
+        sender.add_periodic_task(
+crontab(minute='1')
+, gen_report.s(i.tracker_id), name='add every 10')
 #------functions-----------------
 def send_mail(server_user,pwd,recipient,subject,content,message,attach_file):
     try:
@@ -88,13 +91,14 @@ def hello():
     return "report generating...",200
 
 
-@app.route('/schedule/alert/<int:tid>',methods=['GET','POST'])
-def scheuling(tid):
-    msg=""
+@app.route('/schedule/<int:tracker_id>',methods=['POST'])
+def scheuling(tracker_id):
     if request.method=='POST':
         t=tracker.query.get(tracker_id)
         data=request.json
-        print(data)
+        s_option=data['s_option']
+        schedule=data['schedule']
+    return "OK",200
 
 
 #-----------celery_tasks-------------
@@ -106,13 +110,10 @@ def just_say_hello(name):
 
 
 @celery.task()
-def print_current_time_job():
-     print("START")
-     now = datetime.now()
-     print("now =", now)
-     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-     print("date and time =", dt_string)
-     print("COMPLETE")
+def send_alert():
+
+    return
+
 
 @celery.task()
 def export_tracker(id):
@@ -161,7 +162,7 @@ def gen_report(id,duration=""):
     body = ''
     email_text = f"""Dear {user.username} your report is ready, download the file from attachment.
     """
-
+    print("sending email")
     send_mail(server_user,pwd,recipient,subject,'html',email_text,f'exported_files/pdf/{user.username}.pdf')
     return "template"
     #
