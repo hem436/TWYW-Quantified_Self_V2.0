@@ -35,6 +35,11 @@ const routes = [{
         component: () => import('@/components/DashTracker')
       },
       {
+        path: '/export/tracker',
+        name: 'imp.tracker',
+        component: () => import('@/components/ImportTracker')
+      },
+      {
         path: '/import/tracker',
         name: 'imp.tracker',
         component: () => import('@/components/ImportTracker')

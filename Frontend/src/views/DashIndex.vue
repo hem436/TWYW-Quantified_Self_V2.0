@@ -1,137 +1,120 @@
 false<template>
-  <div id="dash container-fluid">
+<div id="dash container-fluid">
     <div class="row d-flex">
-      <nav
-        id="sidebarMenu"
-        class="col-md-3 col-lg-2 d-md-block sidebar border-right collapse"
-
-      >
-        <div class="flex-shrink-0 ">
-          <a
-            href="#"
-            class="d-flex align-items-center pt-4 pb-3  link-dark text-decoration-none border-bottom"
-          >
-            <svg class="bi me-2" width="30" height="24">
-              <use href="/static/assets/svg/details.svg" />
-            </svg>
-            <span class="fs-4 fw-semibold">Menu</span>
-          </a>
-          <ul class="list-unstyled ps-0">
-            <li class="mb-1">
-              <button
-                class="btn btn-toggle align-items-left rounded collapsed"
-                data-bs-toggle="collapse"
-                data-bs-target="#dashboard-collapse"
-                aria-expanded="false"
-              >
-                Dashboard
-              </button>
-              <div class="collapse" id="dashboard-collapse">
-                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                  <li><router-link to="/dashboard">Overview</router-link></li>
-                  <li><a href="#" class="link-dark rounded">Updates</a></li>
-                  <li><a href="#" class="link-dark rounded">Reports</a></li>
+        <nav id="sidebarMenu" class=" border col-md-3 col-lg-2 d-md-block sidebar  collapse">
+            <div class="flex-shrink-0 ">
+                <a href="#" class="d-flex align-items-center pt-4 pb-3 link-dark text-decoration-none border-bottom">
+                    <svg class="bi me-2" width="30" height="24">
+                        <use href="@/assets/svg/details.svg"/>
+                    </svg>
+                    <span class="fs-4 fw-semibold">Menu</span>
+                </a>
+                <ul class="list-unstyled ps-0">
+                    <li class="mb-1">
+                        <button class="btn btn-toggle align-items-left rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+                            Dashboard
+                        </button>
+                        <div class="collapse" id="dashboard-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <router-link to="/dashboard">Overview</router-link>
+                                </li>
+                                <li>
+                                    <a href="#" class="link-dark rounded">Updates</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="link-dark rounded">Reports</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="mb-1">
+                        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#tracker-collapse" aria-expanded="false">
+                            Trackers
+                        </button>
+                        <div class="collapse" id="tracker-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <router-link to="/tracker/add">New</router-link>
+                                </li>
+                                <li>
+                                    <router-link to="/export/tracker">Export</router-link>
+                                </li>
+                                <li>
+                                    <router-link to="/import/tracker">Import</router-link>
+                                </li>
+                                <!-- <li><a href="#" class="link-dark rounded">Generate report</a></li> -->
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="mb-1">
+                        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#log-collapse" aria-expanded="false">
+                            Logs
+                        </button>
+                        <div class="collapse" id="log-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <router-link to="/log/add" class="link-dark rounded">
+                                        New
+                                    </router-link>
+                                </li>
+                                <li>
+                                    <a href="#" class="link-dark rounded">Export</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="link-dark rounded">Import</a>
+                                </li>
+                                <!-- <li><a href="#" class="link-dark rounded">Generate report</a></li> -->
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="border-top my-3"></li>
+                    <li class="mb-1">
+                        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+                            Account ({{ username }})
+                        </button>
+                        <div class="collapse" id="account-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a href="#" class="link-dark rounded">New...</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="link-dark rounded">Profile</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="link-dark rounded">Settings</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="link-dark rounded">Sign out</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
                 </ul>
-              </div>
-            </li>
-            <li class="mb-1">
-              <button
-                class="btn btn-toggle align-items-center rounded collapsed"
-                data-bs-toggle="collapse"
-                data-bs-target="#tracker-collapse"
-                aria-expanded="false"
-              >
-                Trackers
-              </button>
-              <div class="collapse" id="tracker-collapse">
-                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                  <li><router-link to="/tracker/add">New</router-link></li>
-                  <li><a href="#" class="link-dark rounded">Export</a></li>
-                  <li><a href="#" class="link-dark rounded">Import</a></li>
-                  <!-- <li><a href="#" class="link-dark rounded">Generate report</a></li> -->
-                </ul>
-              </div>
-            </li>
-            <li class="mb-1">
-              <button
-                class="btn btn-toggle align-items-center rounded collapsed"
-                data-bs-toggle="collapse"
-                data-bs-target="#log-collapse"
-                aria-expanded="false"
-              >
-                Logs
-              </button>
-              <div class="collapse" id="log-collapse">
-                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                  <li>
-                    <router-link to="/log/add" class="link-dark rounded">
-                      New
-                    </router-link>
-                  </li>
-                  <li><a href="#" class="link-dark rounded">Export</a></li>
-                  <li><a href="#" class="link-dark rounded">Import</a></li>
-                  <!-- <li><a href="#" class="link-dark rounded">Generate report</a></li> -->
-                </ul>
-              </div>
-            </li>
-            <li class="border-top my-3"></li>
-            <li class="mb-1">
-              <button
-                class="btn btn-toggle align-items-center rounded collapsed"
-                data-bs-toggle="collapse"
-                data-bs-target="#account-collapse"
-                aria-expanded="false"
-              >
-                Account ({{ username }})
-              </button>
-              <div class="collapse" id="account-collapse">
-                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                  <li><a href="#" class="link-dark rounded">New...</a></li>
-                  <li><a href="#" class="link-dark rounded">Profile</a></li>
-                  <li><a href="#" class="link-dark rounded">Settings</a></li>
-                  <li><a href="#" class="link-dark rounded">Sign out</a></li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </nav>
-      <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-        <div
-          class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
-        >
-          <h1 class="h2">Dashboard</h1>
-          <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group me-2">
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-secondary"
-                @click="$router.go()"
-              >
-                Refresh
-              </button>
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-secondary"
-                @click="$router.go(-1)"
-              >
-                (==
-              </button>
-
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-secondary"
-                @click="$router.go(1)"
-              >
-                ==)
-              </button>
             </div>
-          </div>
+        </nav>
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" @click="$router.go()">
+                            Refresh
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" @click="$router.go(-1)">
+                            (==
+                        </button>
+
+                        <button type="button" class="btn btn-sm btn-outline-secondary" @click="$router.go(1)">
+                            ==)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <router-view :key="$route.fullPath"/>
         </div>
-        <router-view :key="$route.fullPath" />
-      </div>
     </div>
-  </div>
+</div>
 </template>
 
 <script>
@@ -169,7 +152,10 @@ main {
 	overflow-x: auto;
 	overflow-y: hidden; */
 }
-
+a {
+   color: #000000;
+    text-decoration: none;
+}
 .b-example-divider {
   flex-shrink: 0;
   width: 1.5rem;
@@ -227,7 +213,7 @@ main {
   transform: rotate(90deg);
 }
 
-.btn-toggle-nav a {
+.btn-toggle-nav a{
   display: inline-flex;
   padding: 0.1875rem 0.5rem;
   margin-top: 0.125rem;

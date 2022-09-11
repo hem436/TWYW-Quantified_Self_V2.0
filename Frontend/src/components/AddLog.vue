@@ -27,7 +27,7 @@
               </option>
             </select>
             <div v-else class="sel_trk">
-              {{ sel_tracker.tracker_name }}-{{ sel_tracker.tracker_type }}
+              {{ sel_tracker.tracker_name }}
             </div>
           </div>
         </div>
@@ -46,6 +46,7 @@
           </div>
           <div class="col-6">
             <input
+            step=1
               type="Number"
               id="log_val"
               name="log_val"

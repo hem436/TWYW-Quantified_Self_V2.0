@@ -3,7 +3,7 @@
     <div class=" row row-cols-lg-3 row-cols-2 justify-content-center">
         <div class="container col m-2" v-for="(t, index) in trackers" :key="t.tracker_id">
             <div class="action row g-0">
-                <div class=" col-md-2 d-flex align-items-center">
+                <div class=" col d-flex align-items-center">
                     <div class="group pt-5">
                         <router-link :to="{ name: 'dash.tracker', params: { id: t.tracker_id } }">
                             <img src="@/assets/svg/details.svg" alt="Details" data-bs-toggle='tooltip' title="Details"/>
@@ -25,16 +25,26 @@
                                         {{ t.tracker_name }}</h4>
                                     <span class="text-muted" v-if="t.last_updated">
                                         <small >Last logged:
-                                            {{ t.last_updated | date_format }}</small >
+                                            {{ t.last_updated.slice(0,-7) | date_format }}</small >
                                     </span >
                                 </div>
                                 <div class="card-body h5">
                                     <div class="card-text">
+                                        <div class="row">
+                                            <div class="col h5">
+                                                Tracker type:
+                                            </div>
+                                            <div class="col">
+                                                {{ t.tracker_type }}<br/><br/>
+                                            </div>
+                                        </div>
+                                        <div class="row" v-if="t.tracker_description">
+                                          <div class="col">
+                                            Tracker description:
 
-                                        Tracker type:
-                                        {{ t.tracker_type }}<br/><br/>
-                                        <span v-if="t.tracker_description">Tracker description:
-                                            {{ t.tracker_description }}<br/></span>
+                                          </div>
+                                        </div>
+                                        <span>{{ t.tracker_description }}</span>
                                     </div>
                                 </div>
                                 <div class="card-footer collapse"></div>
@@ -174,6 +184,7 @@ a {
   background-color: #00f3ff2e;
   border-radius: 15px;
   min-height: 20rem;
+  font-family: Rockwell,sans-serif;
 }
 .group {
   visibility: hidden;
