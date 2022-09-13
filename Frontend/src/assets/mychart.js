@@ -6,6 +6,9 @@ for (let i of this.tracker.log_objects) {
   let date= new Date(i.log_datetime)
   xy.push([+date,i.log_value]);
 }
+xy = xy.sort(function(a, b) {
+  return b[0] - a[0];
+});
 var echarts = this.$echarts;
 // console.log(echarts)
 var chartDom = document.getElementById("myChart");
@@ -16,7 +19,7 @@ var myChart = echarts.init(chartDom, null, {
 var option;
 option = {
   title: {
-    text: "Log Values",
+    text: this.tracker.tracker_name,
     left: "center"
   },
   grid: {
@@ -74,7 +77,7 @@ option = {
   ],
   yAxis: [
     {
-      name: "Log_value",
+      name: "Value",
       nameGap:20,
       type: "value",
       axisLine:{

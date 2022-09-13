@@ -2,169 +2,256 @@ from flask import redirect, render_template,send_from_directory,request,url_for
 from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter
 from matplotlib.ticker import MaxNLocator
-# from matplotlib import cm
-from main import celery,current_user,datetime,app,db
+from datetime import datetime,timedelta
+from main import celery,current_user,app,db
 from database import User,tracker,log,user_datastore
 import numpy as np
-import csv,time,os
+import csv,time,os,time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
-from celery.schedules import crontab
+from celery.schedules import schedule, crontab
+from redbeat import RedBeatSchedulerEntry
+import redis
 from weasyprint import HTML,CSS
-from pathlib import Path
-import base64,smtplib,july
+import json,smtplib,july
+#localhost redis
+r=redis.Redis(db=1)
+r.flushall()
 
-
-@celery.on_after_finalize.connect
-def setup_periodic_tasks(sender, **kwargs):
-    for i in tracker.query.all():
-        sender.add_periodic_task(
-crontab(minute='1')
-, gen_report.s(i.tracker_id), name='add every 10')
 #------functions-----------------
-def send_mail(server_user,pwd,recipient,subject,content,message,attach_file):
+
+def decode_dict(d):
+    result = {}
+    for key, value in d.items():
+        if isinstance(key, bytes):
+            key = key.decode('utf-8')
+        if isinstance(value, bytes):
+            value = json.loads(value.decode('utf-8'))
+        elif isinstance(value, dict):
+            value = decode_dict(value)
+        result.update({key: value})
+    return result
+
+def send_mail(recipient,subject,content="String",message=None,attach_file=None):
     try:
         msg=MIMEMultipart()
-        msg["From"]=server_user
+        msg["From"]=app.config["SERVER_EMAIL"]
+        pwd=app.config["EMAIL_PWD"]
         msg['To']=recipient
         msg['Subject']=subject
         if content=='html':
-            msg.attach(MIMEText(message))
+            msg.attach(MIMEText(message,"html"))
         if attach_file:
             part=MIMEBase("application","octet-stream")
             with open(attach_file,"rb") as attachment:
                 part.set_payload(attachment.read())
                 encoders.encode_base64(part)
-            part.add_header('Content-Disposition',f'attachment;filename={attach_file}')
+            part.add_header('Content-Disposition',f'attachment;filename="MonthlyReport.pdf"')
             msg.attach(part)
         smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         smtp_server.ehlo()
-        smtp_server.login(server_user, pwd)
-        smtp_server.sendmail(server_user, recipient, msg.as_string())
+        smtp_server.login(msg["From"], pwd)
+        smtp_server.sendmail(msg["From"], recipient, msg.as_string())
         smtp_server.close()
         print ("Email sent successfully!")
     except Exception as ex:
         print ("Something went wrong….",ex)
 
-def calender(duration):
-    dates = july.utils.date_range(duration[0],duration[1])
-    data = np.random.randint(0, 14, len(dates))
-    a=july.heatmap(dates=dates,
-             data=data,
-             cmap="Oranges",
-             month_grid=True,
-             horizontal=True,
-             value_label=False,
-             date_label=False,
-             weekday_label=True,
-             month_label=True,
-             year_label=True,
-             colorbar=False,
-             fontfamily="monospace",
-             fontsize=10,
-             titlesize="large",
+def calender(dates,duration,list):
+    data = list
+    a=july.heatmap(title="Log Activity",dates=dates,
+             data=data,cmap="Oranges",
+             frame_on=True,month_grid=True,
+             horizontal=True,value_label=False,
+             date_label=True, weekday_label=True,
+             month_label=True,year_label=False,
+             colorbar=True,fontfamily="monospace",
+             fontsize=15,titlesize="large",
              dpi=200)
-    # a=july.calendar_plot(dates, data,
-    #         cmap="Oranges",
-    #          value_label=False,
-    #          date_label=False,
-    #          month_label=True,
-    #          fontfamily="monospace",
-    #          fontsize=12,
-    #          title=True,
-    #          dpi=100)
-    # fig.colorbar(cm.ScalarMappable(cmap='Oranges'))
     fig = plt.gcf()
-
-    fig.savefig("exported_files/calender.png")
+    fig.savefig("exported_files/charts/calender.svg")
+    return
 
 
 #------------called_routes-----------------
-
-@app.route('/gen_report',methods=['GET','POST'])
-def hello():
-    if request.method=='POST':
-        duration=request.json['duration']
-    job=gen_report.delay(current_user.id,duration)
-    return "report generating...",200
-
-
-@app.route('/schedule/<int:tracker_id>',methods=['POST'])
-def scheuling(tracker_id):
-    if request.method=='POST':
-        t=tracker.query.get(tracker_id)
+# @auth_token_required
+@app.route('/gen_report/<int:id>',methods=['GET','POST'])
+def report_schedule(id):
+    if request.method=="POST":
         data=request.json
-        s_option=data['s_option']
-        schedule=data['schedule']
-    return "OK",200
+        if data and data["schedule"]:
+            if data.get('schedule')=='now':
+                gen_report.delay(id)
+                return "report sent",20
+            elif data.get('schedule')=="Every hour":
+                duration=crontab(minute='0',hour='*')
+                args=[id,"Every hour"]
+            elif data.get('schedule')=="Every week":
+                duration=crontab(0,0,day_of_week="Monday")
+                args=[id,"Every week"]
+            elif data.get('schedule')=="Every month":
+                args=[id]
+                duration=crontab(0,0,day_of_month=1)
+        else:
+            duration=crontab(0,0,day_of_month=1,month_of_year="*")
+            args=[id]
+        entry = RedBeatSchedulerEntry(f'report-{id}', 'application.task.gen_report',duration, args,app=celery)#bug for startswith was for app=celery#
+        entry.save()
+    if request.method=="GET":
+        try:
+            entry=RedBeatSchedulerEntry.from_key(f"redbeat:report-{id}",app=celery)
+        except:
+            return "not found, create a schedule first",404
+        switch=request.args.get("switch")
+        if switch=="disable":
+            entry.enabled=False
+        else:
+            entry.enabled=True
+        entry.save()
+    s={"schedule":None}
+    k=r.keys(f"redbeat:report-{id}")
+    if len(k) > 0:
+        s["schedule"]=r.hgetall(k[0])
+        return decode_dict(s),200
+    else:
+        return "not found, create a schedule first",404
+
+# @auth_token_required
+@app.route('/alert/<int:tracker_id>',methods=['GET','POST'])
+def scheule_alert(tracker_id):
+    if request.method=="POST":
+        data=request.json
+        if data and data["schedule"]:
+            if data.get('schedule')=='now':
+                send_alert.delay(tracker_id)
+                return "alert sent",200
+            elif data.get('schedule')=='Every minute':
+                duration=crontab(minute="*")
+            elif data.get('schedule')=="Every hour":
+                duration=crontab(minute='0',hour='*')
+            elif data.get('schedule')=="Every week":
+                duration=crontab(0,0,day_of_week="Monday")
+            elif data.get('schedule')=="Every month":
+                duration=crontab(0,0,day_of_month=1)
+        else:
+            duration=crontab(0,0,day_of_month=1,month_of_year="*")
+        entry = RedBeatSchedulerEntry(f'alert-{tracker_id}', 'application.task.send_alert',duration, [tracker_id],app=celery)
+        #bug for startswith was for app=celery#
+        entry.save()
+    if request.method=="GET":
+        try:
+            entry=RedBeatSchedulerEntry.from_key(f"redbeat:alert-{tracker_id}",app=celery)
+        except:
+            return "not found, create a schedule first",404
+        switch=request.args.get("switch")
+        if switch=="disable":
+            entry.enabled=False
+        else:
+            entry.enabled=True
+        entry.save()
+    s={"schedule":None}
+    k=r.keys(f"redbeat:alert-{tracker_id}")
+    if len(k) > 0:
+        s["schedule"]=r.hgetall(k[0])
+        return decode_dict(s),200
+    else:
+        return "not found, create a schedule first",404
 
 
 #-----------celery_tasks-------------
 @celery.task()
-def just_say_hello(name):
-     print("inside celery task")
-     print(app,db)
-     return f'hello {name}'
-
-
-@celery.task()
-def send_alert():
-
-    return
-
-
-@celery.task()
-def export_tracker(id):
-    p=os.path
-    user=User.query.filter(User.id==id).first()
-    if not user:
-        return "User not found"
-    filename=f'{user.username}.csv'
-    filepath=p.normpath(p.join(p.dirname(__file__),
-    f'../static/exported_files/{filename}'))
-    file=open(filepath,'w',newline='', encoding='utf-8')
-    w=csv.writer(file,lineterminator='\n')
-    user_header=['User_id','User_name','Email','Number_of_trackers']
-    tracker_header=['S.N','Last_updated','Tracker_id','Tracker_name','Tracker_description','Tracker_type',"Tracker_settings"]
-    w.writerow([user.id,user.username,user.email,len(user.trackers)])
-    w.writerow([Trackers])
-    w.writerow(tracker_header)
-    i=0
-    for t in user.trackers:
-        i+=1
-        w.writerow([i,t.lastupdate,t.tracker_id,t.name,t.desc,t.type,t.settings])
-    file.close()
-    time.sleep(2)
-    # send_from_directory(filepath,filename)
-    return filepath
+def send_alert(tracker_id):
+    t=tracker.query.get(tracker_id)
+    if t:
+        user=t.parent
+    else:
+        return "Not found",404
+    #-----sending email---
+    recipient = user.email
+    subject = f'Alert: Add log to {t.name}'
+    email_text = f"""Dear {user.username} you need to add a log to:<br>
+    Tracker_name: {t.name},<br>
+    {t.desc}<br>
+    link:<a href='http://localhost:8080/tracker/{tracker_id}'>Open in Browser</a>
+    """
+    print("sending alert email")
+    send_mail(recipient,subject,'html',email_text)
+    return "Alert sent",200
 
 @celery.task()
-def gen_report(id,duration=""):
+def gen_report(id,s=""):
     user=User.query.filter(User.id==id).first()
     if not user:
         return "user not found"
-    arg={}
-    arg['duration']=duration
-    with open("./static/userimg.png", "rb") as image_file:
-        arg["userimg"] = base64.b64encode(image_file.read()).decode('utf-8')
-    #-------pdf----------
-    template=render_template('report.html',user=user,datetime=datetime,arg=arg)
-    # htmldoc=HTML(string=template, base_url=os.getcwd())
-    # css = CSS(string='''* { font-family:'Open Sans';}''')
-    # htmldoc.write_pdf('out.pdf',stylesheets=[css])
-    #-----sending email---
-    server_user = "hemantnohack@gmail.com" ####
-    pwd = "acrugxtlyiqkkvje"                ##
-    recipient = 'hemant436268s@gmail.com'
-    subject = f'Report {duration} '
-    body = ''
-    email_text = f"""Dear {user.username} your report is ready, download the file from attachment.
-    """
-    print("sending email")
-    send_mail(server_user,pwd,recipient,subject,'html',email_text,f'exported_files/pdf/{user.username}.pdf')
-    return "template"
-    #
 
-calender(["2020-01-20", "2020-12-31"])
+    if s=="Every hour":
+        duration=[datetime.now().replace(minute=0,second=0,microsecond=0),datetime.now().replace(minute=59,second=0,microsecond=0)]
+    elif s=="Every week":
+        duration=[datetime.now().replace(hour=0,minute=0,second=0,microsecond=0),datetime.now().replace(hour=0,minute=0,second=0,microsecond=0)+timedelta(days=-7)]
+    elif s=="Every month" or s=="":
+        duration=[]
+        duration.append(datetime.now().replace(day=1,hour=0,minute=0,second=0,microsecond=0))
+        if duration[0].month == 12:
+            duration.append(datetime(duration[0].year, duration[0].month, 31))
+        else:
+            duration.append(datetime(duration[0].year, duration[0].month + 1, 1) + timedelta(days=-1))
+    try:
+        dates = july.utils.date_range(duration[0],duration[1])
+        log_dict={}
+        list=[0]*len(dates)
+        for i in user.trackers:
+            x,y=[],[]
+            fig= plt.figure(figsize=(5,4))
+            plt.rcParams['figure.figsize'] = [5,4]
+            plt.style.use('seaborn-ticks')
+            ax=plt.gca()
+            log_dict[i.tracker_id]=[]
+            for j in i.logs:
+                if (j.log_datetime>duration[0] and j.log_datetime<duration[1]):
+                    x.append(j.log_datetime)
+                    if i.type=='Integer':
+                        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+                        plt.ylabel('Int')
+                        y.append(int(j.log_value))
+                    elif i.type=='Numeric':
+                        plt.ylabel('Float')
+                        y.append(float(j.log_value))
+                    elif i.type=='Multiple-choice':
+                        plt.ylabel('Options')
+                        y.append(j.log_value)
+                    elif i.type=='Time':
+                        ax.yaxis.set_major_formatter(DateFormatter('%H:%M:%S'))
+                        y.append(datetime.strptime(j.log_value,"%H:%M:%S"))
+                    list[j.log_datetime.day-1]+=1
+                    log_dict[i.tracker_id].append(j)
+            if len(x)>1:
+                plt.gcf().autofmt_xdate()
+                plt.suptitle("Log trend")
+                plt.plot(x,y,marker='o',color='b',linestyle='--')
+                plt.margins(0.05)
+                fig.savefig(f'exported_files/charts/{i.name}_{i.tracker_id}.svg',bbox_inches ="tight")
+            plt.close()
+
+        #----chart creation----
+        calender(dates,duration,list)
+    except Exception as e:
+        print(e)
+        return "chart gen error"
+
+    #-------pdf----------
+    template=render_template('report.html',user=user,datetime=datetime,log_dict=log_dict)
+    htmldoc=HTML(string=template, base_url=os.getcwd())
+    css = CSS(string='''* { font-family:'Open Sans';}''')
+    htmldoc.write_pdf(f'exported_files/pdf/{user.username}.pdf',stylesheets=[css])
+    #-----sending email---
+    recipient = user.email
+    subject = f'Report'
+    body = ''
+    email_text = f"""<em>Dear {user.username} your report is ready, download the file from attachment.<em>
+    """
+    print("sending report email")
+    send_mail(recipient,subject,'html',email_text,f'exported_files/pdf/{user.username}.pdf')
+    return "Report sent",200
+    #

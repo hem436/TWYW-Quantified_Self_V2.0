@@ -15,5 +15,5 @@ fi
 
 # Activate virtual env
 . .env/bin/activate
-celery -A main.celery beat --max-interval 1 -l info
+celery -A main.celery beat -S redbeat.RedBeatScheduler --max-interval 1 -l info
 deactivate

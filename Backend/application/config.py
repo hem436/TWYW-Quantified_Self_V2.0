@@ -31,7 +31,8 @@ class LocalDevelopmentConfig(Config):
     CACHE_TYPE="RedisCache"
     CACHE_REDIS_HOST="localhost"
     CACHE_REDIS_PORT="6379"
-
+    SERVER_EMAIL="hemantnohack@gmail.com"
+    EMAIL_PWD="acrugxtlyiqkkvje"
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///quantified_self_database.sqlite3'
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
     # app.config['SECRET_KEY']='myappquantifie'

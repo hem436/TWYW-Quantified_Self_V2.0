@@ -23,11 +23,8 @@
     </div>
     <div class="row border-bottom" style="font-size:30px;text-align:center;">
       <div class="col">
-        TWYW-Quantified Self {{arg.duration}} Report
+        TWYW-Quantified Self Report
       </div>
-    </div>
-
-    </div>
     </div>
     <br><br><br><br>
     <div class="row border pt-2" style="font-size:25px">
@@ -55,6 +52,9 @@
   <h4 class=" d-flex justify-content-between"><span>Active : </span><span>{{user.active}}</span></h4> -->
         <!-- <h4>Roles : {{user.roles}}</h4> -->
       </div>
+    </div>
+    <div>
+      <img class="img-fluid mt-5" src="exported_files/charts/calender.svg" alt="calender unavailable">
     </div>
     <div class="pagebreak"></div>
     {% if user.trackers %}
@@ -101,7 +101,7 @@
               <th>Value</th>
               <th>Note</th>
             </tr>
-            {% for l in tracker.logs %}
+            {% for l in log_dict[tracker.tracker_id] %}
             <tr>
               <td>{{loop.index}}</td>
               <td>{{l.log_datetime.strftime('(%d/%b/%Y, %H:%M:%S)')}}</td>
@@ -113,7 +113,7 @@
           </thead>
         </table>
         <div class="col-sm-8 col-xl-7 d-flex justify-content-center">
-          <img class="img-fluid" src="static/{{tracker.name}}_{{tracker.tracker_id}}.png" alt="chart unavailable">
+          <img class="img-fluid mt-2" src="exported_files/charts/{{tracker.name}}_{{tracker.tracker_id}}.svg" alt="chart unavailable">
         </div>
       </div>
     </div>

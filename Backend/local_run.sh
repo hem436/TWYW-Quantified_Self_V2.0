@@ -15,5 +15,5 @@ fi
 
 # Activate virtual env
 . .env/bin/activate
-gunicorn main:app --worker-class gevent --bind 127.0.0.1:5000 --workers=4 --reload 
+gunicorn main:app --worker-class gevent --bind 127.0.0.1:5000 --workers=2 --reload 
 # deactivate

@@ -28,6 +28,7 @@ def create_app():
     celery=worker.celery
     celery.conf.update(
     broker_url=app.config["CELERY_BROKER_URL"],
+    redbeat_redis_url = app.config["CELERY_BROKER_URL"],
     result_backend=app.config["CELERY_RESULT_BACKEND"]
     )
     celery.Task = worker.ContextTask

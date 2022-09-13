@@ -156,6 +156,7 @@ def view_tl(tracker_id):
         plt.plot(x,y,marker='o',color='b',linestyle='--')
         plt.gcf().autofmt_xdate()
         plt.savefig('static/chart.png')
+        plt.close()
         if file:
             w.writerow(['Timestamp','Log_value'])
             for i in range(len(x)):

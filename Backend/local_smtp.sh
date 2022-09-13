@@ -12,4 +12,4 @@ fi
 
 # Activate virtual env
 . .env/bin/activate
-gnome-terminal --tab -- bash -c "~/go/bin/MailHog;exec bash -i"
+~/go/bin/MailHog;exec bash -i
