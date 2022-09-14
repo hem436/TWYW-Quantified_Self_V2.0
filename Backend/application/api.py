@@ -4,9 +4,9 @@ from flask_security import auth_required,auth_token_required,hash_password,login
 from database import User,tracker,log,user_datastore,db
 import bcrypt
 from datetime import datetime
+from main import cache
+
 #------------output fields-----------------
-
-
 tracker_fields={
     "user_id":fields.Integer,
     "tracker_id":fields.Integer,
@@ -151,6 +151,7 @@ class UserApi(Resource):
 class TrackerApi(Resource):
 
     @auth_token_required
+    @cache.memoize(10)
     def get(self,tracker_id):
         try:
             trk=tracker.query.get(int(tracker_id))
@@ -236,6 +237,7 @@ class TrackerApi(Resource):
 
 class LogApi(Resource):
     @auth_token_required
+    @cache.memoize(10)
     def get(self,log_id):
         try:
             logobj=log.query.get(int(log_id))

@@ -4,7 +4,8 @@
       <div
         class="col-sm-10 offset-sm-1 col-lg-8 offset-lg-2 justify-content-center"
       >
-        <div class="container mb-5">
+        <h4>Trend</h4>
+        <div class="container border mb-5">
           <div class="chart" id="myChart"></div>
         </div>
 
@@ -30,45 +31,115 @@
                 <td>{{ l.log_value }}</td>
                 <td>{{ l.note }}</td>
                 <td>
-                  <button type="button" name="button">
+                  <div class="action d-flex">
                     <router-link
                       :to="{ name: 'log.update', params: { id: l.log_id } }"
-                      >Edit</router-link
                     >
-                  </button>
-                  <button type="button" name="button">
-                    <a @click.prevent="del(l.log_id)">Delete</a>
-                  </button>
+                      <img
+                        src="@/assets/svg/edit.svg"
+                        data-bs-toggle="tooltip"
+                        title="Edit log"
+                      />
+                    </router-link>
+                    <a @click.prevent="del(l.log_id)">
+                      <img
+                        src="@/assets/svg/delete.svg"
+                        data-bs-toggle="tooltip"
+                        title="Delete log"
+                    /></a>
+                  </div>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="text-center">
-          <button class="button h5" type="button">
-            <router-link
-              :to="{ name: 'log.add.id', params: { id: tracker_id } }"
-              >Add Log</router-link
-            >
-          </button>
-        </div>
-        <div class="h3 m-3">
+      </div>
+      <div class="col" align="right">
+        <router-link :to="{ name: 'log.add.id', params: { id: tracker_id } }">
+          <img
+            src="@/assets/svg/add.svg"
+            width="40"
+            alt="add log"
+            data-bs-toggle="tooltip"
+            title="Add log"
+        /></router-link>
+        <a
+          class="m-2"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#alert"
+          aria-controls="alert"
+        >
+          <img
+            src="@/assets/svg/alert.svg"
+            width="40"
+            alt="alert"
+            data-bs-toggle="tooltip"
+            title="Schedule alert"
+          />
+        </a>
+      </div>
+    </div>
+    <div
+      class="offcanvas offcanvas-end"
+      tabindex="-1"
+      id="alert"
+      aria-labelledby="alertLabel"
+    >
+      <div class="offcanvas-header">
+        <div class="h3 m-4 ps-4" id="alertLabel">
           Scheduling an alert
         </div>
+        <button
+          type="button"
+          class="btn-close text-reset"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
         <form id="s_option">
-          <div
-            class="btn-group-horizontal p-3"
-            role="group"
-            aria-label="Vertical radio toggle button group"
-          >
+          <div class="h5">
+            Schedule name:
+            {{ this.current_s.definition.name }}
+            <button
+              class="h6 m-2 btn btn-outline-danger"
+              type="button"
+              @click="test_alert"
+            >
+              test now
+            </button>
+          </div>
+          <div class="form-check form-switch">
+            <label class="form-check-label" for="switch">On/Off</label>
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              name="switch"
+              v-model="sw"
+            />
+          </div>
+
+          <div class="btn-group my-4">
             <input
               type="radio"
               class="btn-check"
               name="vbtn-radio"
               @change="onChange($event)"
-              id="everyDay"
+              id="Every hour"
             />
-            <label class="btn btn-outline-primary mx-1" for="everyDay"
+            <label class="btn btn-outline-info " for="Every hour"
+              >Every hour</label
+            >
+            <input
+              type="radio"
+              class="btn-check"
+              name="vbtn-radio"
+              @change="onChange($event)"
+              id="Every day"
+            />
+            <label class="btn btn-outline-info" for="Every day"
               >Every day</label
             >
             <input
@@ -76,9 +147,9 @@
               class="btn-check"
               name="vbtn-radio"
               @change="onChange($event)"
-              id="everyWeek"
+              id="Every week"
             />
-            <label class="btn btn-outline-primary mx-1" for="everyWeek"
+            <label class="btn btn-outline-info " for="Every week"
               >Every week</label
             >
             <input
@@ -86,9 +157,9 @@
               class="btn-check"
               name="vbtn-radio"
               @change="onChange($event)"
-              id="everyMonth"
+              id="Every month"
             />
-            <label class="btn btn-outline-primary mx-1" for="everyMonth"
+            <label class="btn btn-outline-info " for="Every month"
               >Every month</label
             >
             <input
@@ -96,129 +167,27 @@
               class="btn-check"
               name="vbtn-radio"
               @change="onChange($event)"
-              id="everyYear"
+              id="Every year"
             />
-            <label class="btn btn-outline-primary mx-1" for="everyYear"
+            <label class="btn btn-outline-info " for="Every year"
               >Every year</label
             >
-            <input
-              type="radio"
-              class="btn-check"
-              name="vbtn-radio"
-              @change="onChange($event)"
-              id="customFreq"
-            />
-            <label class="btn btn-outline-primary mx-1" for="customFreq"
-              >Custom Frequency</label
+          </div>
+          <div class="my-3" align="center">
+            <button
+              class="btn btn-outline-primary"
+              type="button"
+              name="button"
+              @click="schedule_alert"
             >
-          </div>
-        </form>
-        <div class="table">
-          <div class="">
-            Reference date:
-            <input
-              type="datetime-local"
-              step="1"
-              v-model="schedule.ref_date"
-              name="refdate"
-              value="today"
-            />
-          </div>
-          <div>Frequency of repeat:</div>
-          <label
-            class="mx-3"
-            for="yearfreq"
-            v-if="checkedValue == 'customFreq' || checkedValue == 'everyYear'"
-            >year
-            <input
-              class="inp_freq"
-              type="Number"
-              step="1"
-              v-model="schedule.year"
-              name="yearfreq"
-              min="0"
-              value="0"
-          /></label>
-          <label
-            class="mx-3"
-            for="monthfreq"
-            v-if="checkedValue == 'customFreq' || checkedValue == 'everyMonth'"
-            >month
-            <input
-              class="inp_freq"
-              type="Number"
-              step="1"
-              v-model="schedule.month"
-              name="monthfreq"
-              min="0"
-              max="11"
-              value="0"
-          /></label>
-
-          <label class="mx-3" for="weekfreq" v-if="checkedValue == 'everyWeek'"
-            >day
-            <input
-              class="inp_freq"
-              type="Number"
-              step="1"
-              v-model="schedule.week"
-              name="weekfreq"
-              min="0"
-              max="7"
-              value="0"
-          /></label>
-
-          <label
-            class="mx-3"
-            for="dayfreq"
-            v-if="checkedValue == 'customFreq' || checkedValue == 'everyDay'"
-            >day
-            <input
-              class="inp_freq"
-              type="Number"
-              step="1"
-              v-model="schedule.day"
-              name="dayfreq"
-              min="0"
-              max="31"
-              value="0"
-          /></label>
-          <label
-            class="mx-3"
-            for="dayfreq"
-            v-if="checkedValue == 'customFreq' || checkedValue == 'everyHour'"
-            >hour
-            <input
-              class="inp_freq"
-              type="Number"
-              step="1"
-              v-model="schedule.hour"
-              name="hourfreq"
-              min="0"
-              max=""
-              value="0"
-          /></label>
-          <label
-            class="mx-3"
-            for="minfreq"
-            v-if="checkedValue == 'customFreq' || checkedValue == 'everyMin'"
-            >min
-            <input
-              class="inp_freq"
-              type="Number"
-              step="1"
-              v-model="schedule.min"
-              name="minfreq"
-              min="0"
-              value="0"
-          /></label>
-          <br />
-          <div class="my-2" align="center">
-            <button type="button" @click="schedule_alert">
-              Schedule alert
+              <img
+                src="@/assets/svg/timer.svg"
+                data-bs-toggle="tooltip"
+                title="Schedule alert"
+              />Schedule an alert
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   </div>
@@ -226,21 +195,15 @@
 
 <script>
 import mychart from "../assets/mychart.js";
-// import "chartjs-adapter-date-fns";
 export default {
   data() {
     return {
       tracker_id: this.$route.params.id,
       tracker: "",
+      sw: "",
       s_option: "",
-      schedule: {
-        ref_date: null,
-        year: 0,
-        month: 0,
-        week: 0,
-        day: 0,
-        hour: 0,
-        min: 0
+      current_s: {
+        definition: { name: "no schedule" }
       }
     };
   },
@@ -279,6 +242,38 @@ export default {
           console.log(rej.error + " kindly re-login");
           self.$router.push("/login"); //remember
         });
+      fetch(
+        "http://localhost:5000/alert/" + this.tracker_id + "?switch=" + this.sw,
+        {
+          method: "GET",
+          headers: {
+            "A-T":
+              this.$Ciphers
+                .decode("Vigenere Cipher", this.$cookies.get("user") || "", [
+                  "Pwd"
+                ])
+                .split(";")[2] || ""
+          }
+        }
+      )
+        .then(response => {
+          if (response && response.ok) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        })
+        .then(data => {
+          this.current_s = data.schedule;
+          this.s_option = data.schedule.definition.args[1];
+          this.sw = data.schedule.definition.enabled;
+          document.getElementById(this.s_option).checked = true;
+        })
+        .catch(rej => {
+          console.log(rej.statusText);
+          console.log(rej.status + " kindly re-login");
+          return;
+        });
     },
     del(id) {
       if (window.confirm("Want to delete this log?")) {
@@ -315,13 +310,53 @@ export default {
     },
     onChange(event) {
       this.s_option = event.target.id;
+      this.sw = true;
     },
     schedule_alert() {
       let data = {
-        s_option: this.s_option,
-        schedule: this.schedule
+        schedule: this.s_option
       };
-      fetch("http://localhost:5000/schedule/" + this.tracker_id, {
+      fetch(
+        "http://localhost:5000/alert/" + this.tracker_id + "?switch=" + this.sw,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "A-T":
+              this.$Ciphers
+                .decode("Vigenere Cipher", this.$cookies.get("user") || "", [
+                  "Pwd"
+                ])
+                .split(";")[2] || ""
+          },
+          body: JSON.stringify(data)
+        }
+      )
+        .then(response => {
+          if (response && response.ok) {
+            return response.json();
+          } else {
+            throw response;
+          }
+        })
+        .then(data => {
+          this.current_s = data.schedule;
+          this.sw = data.schedule.definition.enabled;
+          document.getElementById(this.s_option).checked = true;
+          alert("scheduled");
+        })
+        .catch(rej => {
+          if (rej.status == 400) {
+            alert("select a schedule first");
+          }
+          return;
+        });
+    },
+    test_alert() {
+      let data = {
+        schedule: "now"
+      };
+      fetch("http://localhost:5000/alert/" + this.tracker_id, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -333,16 +368,20 @@ export default {
               .split(";")[2] || ""
         },
         body: JSON.stringify(data)
-      }).catch(rej => {
-        console.log(rej);
-        console.log(rej.error + " kindly re-login");
-        return;
-      });
-    }
-  },
-  computed: {
-    checkedValue() {
-      return this.s_option;
+      })
+        .then(response => {
+          if (response && response.ok) {
+            return response.text();
+          }
+        })
+        .then(data => {
+          alert(data);
+        })
+        .catch(rej => {
+          console.log(rej);
+          console.log(rej.error + " kindly re-login");
+          return;
+        });
     }
   },
   watch: {
@@ -365,10 +404,7 @@ export default {
   border-radius: 15px;
   border: hidden;
 }
-.table-responsive {
-  max-height: 80vh;
-  overflow-y: scroll;
-}
+
 button {
   box-shadow: 0 6px 8px 0 rgba(0, 0, 0, 0.05), 0 6px 5px 0 rgba(0, 0, 0, 0.05);
   border-radius: 10px;
@@ -377,13 +413,17 @@ button {
 a {
   text-decoration: none;
 }
-
+img {
+  margin: 5px;
+  width: 40px;
+  border-radius: 40px;
+}
+img:hover {
+  box-shadow: 0 0 0 2px #d0d0d0;
+}
 .chart {
   position: relative;
   height: 70vh;
   overflow: hidden;
-}
-.inp_freq {
-  width: 3rem;
 }
 </style>

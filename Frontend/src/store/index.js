@@ -13,6 +13,9 @@ export default new Vuex.Store({
     trackers:[]
   },
   getters:{
+    get_user(state){
+      return [state.user_id,state.user]
+    },
     tracker_types(state){
       return state.trackers.map(t=>t.tracker_type)
     },

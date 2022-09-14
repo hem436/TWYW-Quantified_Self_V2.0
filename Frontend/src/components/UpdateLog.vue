@@ -4,8 +4,7 @@
       <div class="col-6 offset-3 d-flex justify-content-center">
         <h1>Update a log</h1>
       </div>
-      <div class="col-3 d-flex justify-content-center">
-      </div>
+      <div class="col-3 d-flex justify-content-center"></div>
     </div>
     <br />
     <div class="row">
@@ -15,7 +14,10 @@
             Tracker:
           </div>
           <div class="col-6">
-            {{ log.tracker_id }}
+            <router-link
+              :to="{ name: 'dash.tracker', params: { id: tracker.tracker_id } }"
+              >{{ tracker.tracker_name }}</router-link
+            >
           </div>
         </div>
         <div class="row m-3">
@@ -312,7 +314,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
-input{
-  padding:0px;
+input {
+  padding: 0px;
 }
 </style>

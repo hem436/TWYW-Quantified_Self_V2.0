@@ -4,8 +4,7 @@
       <div class="col-6 offset-3 d-flex justify-content-center">
         <h1>Add a log</h1>
       </div>
-      <div class="col-3 d-flex justify-content-center">
-      </div>
+      <div class="col-3 d-flex justify-content-center"></div>
     </div>
     <br />
     <div class="row">
@@ -27,7 +26,10 @@
               </option>
             </select>
             <div v-else class="sel_trk">
-              {{ sel_tracker.tracker_name }}
+              <router-link
+                :to="{ name: 'dash.tracker', params: { id: rtracker_id } }"
+                >{{ sel_tracker.tracker_name }}</router-link
+              >
             </div>
           </div>
         </div>
@@ -46,11 +48,12 @@
           </div>
           <div class="col-6">
             <input
-            step=1
+              step="1"
               type="Number"
               id="log_val"
               name="log_val"
               placeholder="Int"
+              oninput="this.value = Math.round(this.value);"
               required
             />
           </div>

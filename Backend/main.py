@@ -16,9 +16,11 @@ from flask_security import login_required,login_user,logout_user,auth_required,c
 from flask_security import Security,SQLAlchemyUserDatastore,hash_password,verify_password
 from flask_cors import CORS
 from database import *
+from flask_caching import Cache
 app=None
 api=None
 celery=None
+cache=None
 def create_app():
     #app initialization
     app = Flask(__name__)
@@ -45,12 +47,14 @@ def create_app():
     app.app_context().push()
     #security init
     security = Security(app, user_datastore)
-    CORS(app);
+    CORS(app)
     app.app_context().push()
-    return app,api,celery,db
-app,api,celery,db=create_app()
+    cache=Cache(app)
+    app.app_context().push()
+    return app,api,celery,db,cache
+app,api,celery,db,cache=create_app()
 
-#api controllers imports
+# api controllers imports
 from application.api import *
 api.add_resource(UserApi,'/api/user/<string:username>','/api/user')
 api.add_resource(TrackerApi,'/api/tracker/<int:tracker_id>','/api/tracker')

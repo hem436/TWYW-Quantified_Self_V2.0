@@ -1,21 +1,22 @@
-from flask import redirect, render_template,send_from_directory,request,url_for
+from flask import render_template,request
+from flask_security import auth_token_required
 from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter
 from matplotlib.ticker import MaxNLocator
 from datetime import datetime,timedelta
-from main import celery,current_user,app,db
-from database import User,tracker,log,user_datastore
-import numpy as np
-import csv,time,os,time
+from main import celery,app,db
+from database import User,tracker
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 from celery.schedules import schedule, crontab
 from redbeat import RedBeatSchedulerEntry
-import redis
 from weasyprint import HTML,CSS
-import json,smtplib,july
+import json,smtplib,july,os,redis
+import numpy as np
+
+
 #localhost redis
 r=redis.Redis(db=1)
 r.flushall()
@@ -76,40 +77,44 @@ def calender(dates,duration,list):
 
 
 #------------called_routes-----------------
-# @auth_token_required
+@auth_token_required
 @app.route('/gen_report/<int:id>',methods=['GET','POST'])
 def report_schedule(id):
     if request.method=="POST":
         data=request.json
-        if data and data["schedule"]:
+        if data and data.get('schedule'):
             if data.get('schedule')=='now':
                 gen_report.delay(id)
-                return "report sent",20
+                return "Sending report...",200
             elif data.get('schedule')=="Every hour":
-                duration=crontab(minute='0',hour='*')
+                duration=crontab(minute='0')
                 args=[id,"Every hour"]
+            elif data.get('schedule')=="Every day":
+                duration=crontab(minute='0',hour='8')
+                args=[id,"Every day"]
             elif data.get('schedule')=="Every week":
                 duration=crontab(0,0,day_of_week="Monday")
                 args=[id,"Every week"]
             elif data.get('schedule')=="Every month":
                 args=[id]
                 duration=crontab(0,0,day_of_month=1)
+            else:
+                return "Bad Request",400
         else:
-            duration=crontab(0,0,day_of_month=1,month_of_year="*")
-            args=[id]
+            return "Bad Request",400
         entry = RedBeatSchedulerEntry(f'report-{id}', 'application.task.gen_report',duration, args,app=celery)#bug for startswith was for app=celery#
-        entry.save()
+        # entry.save()
     if request.method=="GET":
         try:
             entry=RedBeatSchedulerEntry.from_key(f"redbeat:report-{id}",app=celery)
         except:
             return "not found, create a schedule first",404
-        switch=request.args.get("switch")
-        if switch=="disable":
-            entry.enabled=False
-        else:
-            entry.enabled=True
-        entry.save()
+    switch=request.args.get("switch")
+    if switch=="false":
+        entry.enabled=False
+    elif switch=="true":
+        entry.enabled=True
+    entry.save()
     s={"schedule":None}
     k=r.keys(f"redbeat:report-{id}")
     if len(k) > 0:
@@ -118,7 +123,7 @@ def report_schedule(id):
     else:
         return "not found, create a schedule first",404
 
-# @auth_token_required
+@auth_token_required
 @app.route('/alert/<int:tracker_id>',methods=['GET','POST'])
 def scheule_alert(tracker_id):
     if request.method=="POST":
@@ -131,26 +136,31 @@ def scheule_alert(tracker_id):
                 duration=crontab(minute="*")
             elif data.get('schedule')=="Every hour":
                 duration=crontab(minute='0',hour='*')
+            elif data.get('schedule')=="Every day":
+                duration=crontab(minute='0',hour='8')
             elif data.get('schedule')=="Every week":
                 duration=crontab(0,0,day_of_week="Monday")
             elif data.get('schedule')=="Every month":
                 duration=crontab(0,0,day_of_month=1)
+            else:
+                return "Bad Request",400
         else:
-            duration=crontab(0,0,day_of_month=1,month_of_year="*")
-        entry = RedBeatSchedulerEntry(f'alert-{tracker_id}', 'application.task.send_alert',duration, [tracker_id],app=celery)
+            return "Bad Request",400
+        entry = RedBeatSchedulerEntry(f'alert-{tracker_id}', 'application.task.send_alert',duration, args=[tracker_id,data.get("schedule")],app=celery)
         #bug for startswith was for app=celery#
-        entry.save()
+        # entry.save()
     if request.method=="GET":
         try:
             entry=RedBeatSchedulerEntry.from_key(f"redbeat:alert-{tracker_id}",app=celery)
         except:
             return "not found, create a schedule first",404
-        switch=request.args.get("switch")
-        if switch=="disable":
-            entry.enabled=False
-        else:
-            entry.enabled=True
-        entry.save()
+    switch=request.args.get("switch")
+    print(request.args)
+    if switch=="false":
+        entry.enabled=False
+    elif switch=="true":
+        entry.enabled=True
+    entry.save()
     s={"schedule":None}
     k=r.keys(f"redbeat:alert-{tracker_id}")
     if len(k) > 0:
@@ -162,7 +172,7 @@ def scheule_alert(tracker_id):
 
 #-----------celery_tasks-------------
 @celery.task()
-def send_alert(tracker_id):
+def send_alert(tracker_id,s=None):
     t=tracker.query.get(tracker_id)
     if t:
         user=t.parent
@@ -174,7 +184,7 @@ def send_alert(tracker_id):
     email_text = f"""Dear {user.username} you need to add a log to:<br>
     Tracker_name: {t.name},<br>
     {t.desc}<br>
-    link:<a href='http://localhost:8080/tracker/{tracker_id}'>Open in Browser</a>
+    Link:   <a href='http://localhost:8080/log/{tracker_id}'>Open in Browser</a>
     """
     print("sending alert email")
     send_mail(recipient,subject,'html',email_text)
@@ -185,11 +195,12 @@ def gen_report(id,s=""):
     user=User.query.filter(User.id==id).first()
     if not user:
         return "user not found"
-
     if s=="Every hour":
         duration=[datetime.now().replace(minute=0,second=0,microsecond=0),datetime.now().replace(minute=59,second=0,microsecond=0)]
     elif s=="Every week":
         duration=[datetime.now().replace(hour=0,minute=0,second=0,microsecond=0),datetime.now().replace(hour=0,minute=0,second=0,microsecond=0)+timedelta(days=-7)]
+    elif s=="Every day":
+        duration=[datetime.now().replace(hour=0,minute=0,second=0,microsecond=0),datetime.now().replace(hour=23,minute=59,second=59,microsecond=0)]
     elif s=="Every month" or s=="":
         duration=[]
         duration.append(datetime.now().replace(day=1,hour=0,minute=0,second=0,microsecond=0))

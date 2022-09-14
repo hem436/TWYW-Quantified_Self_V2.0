@@ -20,6 +20,15 @@ const routes = [{
         }
       },
       {
+          path: '/report',
+          name: 'schedule.report',
+          component: () => import('@/components/ScheduleReport'),
+          meta: {
+            title: 'Schedule Reports',
+            auth:true
+          }
+        },
+      {
         path: '/tracker/add/',
         name: 'tracker.add',
         component: () => import('@/components/AddTracker')
@@ -33,11 +42,6 @@ const routes = [{
         path: '/tracker/:id',
         name: 'dash.tracker',
         component: () => import('@/components/DashTracker')
-      },
-      {
-        path: '/export/tracker',
-        name: 'imp.tracker',
-        component: () => import('@/components/ImportTracker')
       },
       {
         path: '/import/tracker',
@@ -59,6 +63,11 @@ const routes = [{
         path:'/log/:id',
         name: 'log.add.id',
         component: () => import('@/components/AddLog')
+      },
+      {
+        path: '/import/log',
+        name: 'imp.logs',
+        component: () => import('@/components/ImportLogs')
       }
     ]
   },

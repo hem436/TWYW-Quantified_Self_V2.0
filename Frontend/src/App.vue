@@ -29,7 +29,7 @@
           aria-expanded="false"
         >
           <img
-            src="./assets/userimg.png"
+            src="../public/img/userimg.png"
             alt="mdo"
             width="30"
             height="30"
@@ -40,7 +40,9 @@
         <ul class="dropdown-menu dropdown-menu-end">
           <li><a class="dropdown-item" type="button">Profile</a></li>
           <hr class="dropdown-divider" />
-          <li><a class="dropdown-item" type="button">Sign out</a></li>
+          <li>
+            <a @click="signout" class="dropdown-item" type="button">Sign out</a>
+          </li>
         </ul>
       </div>
     </header>
@@ -50,7 +52,13 @@
 
 <script>
 export default {
-  name: "App"
+  name: "App",
+  methods: {
+    signout() {
+      this.$cookies.remove("user");
+      this.$router.go();
+    }
+  }
 };
 </script>
 
