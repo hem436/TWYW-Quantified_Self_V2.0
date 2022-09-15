@@ -96,8 +96,17 @@ def report_schedule(id):
                 duration=crontab(0,0,day_of_week="Monday")
                 args=[id,"Every week"]
             elif data.get('schedule')=="Every month":
-                args=[id]
+                args=[id,"Every month"]
                 duration=crontab(0,0,day_of_month=1)
+            elif data.get('schedule')=="Every year":
+                args=[id,"Every year"]
+                duration=crontab(0,0,day_of_month=1,month_of_year=1)
+            elif data.get('schedule')=="Custom":
+                args=[id,"*"]
+                duration=crontab(data.get("minute"),
+                                data.get("hour"),
+                                day_of_month=data.get("day"),
+                                month_of_year=data.get("year"))
             else:
                 return "Bad Request",400
         else:
@@ -118,8 +127,12 @@ def report_schedule(id):
     s={"schedule":None}
     k=r.keys(f"redbeat:report-{id}")
     if len(k) > 0:
-        s["schedule"]=r.hgetall(k[0])
-        return decode_dict(s),200
+        s["name"]=entry.name
+        s["schedule"]=entry.args[1]
+        s["enabled"]=entry.enabled
+        s["next"]=entry.next().due_at+timedelta(hours=5,minutes=30)#for ist
+
+        return s,200
     else:
         return "not found, create a schedule first",404
 
@@ -163,9 +176,13 @@ def scheule_alert(tracker_id):
     entry.save()
     s={"schedule":None}
     k=r.keys(f"redbeat:alert-{tracker_id}")
+    print(k)
     if len(k) > 0:
-        s["schedule"]=r.hgetall(k[0])
-        return decode_dict(s),200
+        s["name"]=entry.name
+        s["schedule"]=entry.args[1]
+        s["enabled"]=entry.enabled
+        s["next"]=entry.next().due_at+timedelta(hours=5,minutes=30)#for ist
+        return s,200
     else:
         return "not found, create a schedule first",404
 
@@ -201,13 +218,16 @@ def gen_report(id,s=""):
         duration=[datetime.now().replace(hour=0,minute=0,second=0,microsecond=0),datetime.now().replace(hour=0,minute=0,second=0,microsecond=0)+timedelta(days=-7)]
     elif s=="Every day":
         duration=[datetime.now().replace(hour=0,minute=0,second=0,microsecond=0),datetime.now().replace(hour=23,minute=59,second=59,microsecond=0)]
-    elif s=="Every month" or s=="":
+    elif s=="Every month" or s=="*":
         duration=[]
         duration.append(datetime.now().replace(day=1,hour=0,minute=0,second=0,microsecond=0))
         if duration[0].month == 12:
             duration.append(datetime(duration[0].year, duration[0].month, 31))
         else:
             duration.append(datetime(duration[0].year, duration[0].month + 1, 1) + timedelta(days=-1))
+    elif s=="Every year":
+        duration=[datetime.now().replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0),datetime.now().replace(month=12,day=31,hour=23,minute=59,second=59,microsecond=0)]
+
     try:
         dates = july.utils.date_range(duration[0],duration[1])
         log_dict={}

@@ -3,7 +3,7 @@
     <form class="form col-10 offset-1">
       <div class="h5">
         Schedule name:
-        {{ this.current_s.definition.name }}
+        {{ this.current_s.name }}<br />
       </div>
       <div class="form-check form-switch">
         <label class="form-check-label" for="switch">On/Off</label>
@@ -52,6 +52,10 @@
         />
         <label class="btn btn-outline-info " for="Every year">Every year</label>
       </div>
+      <div class="">
+        <em class="h6">Next Schedule ({{ this.current_s.next }})</em>
+      </div>
+
       <div class="my-3">
         <button
           class="btn btn-outline-primary"
@@ -81,7 +85,8 @@ export default {
       sw: "",
       s_option: "",
       current_s: {
-        definition: { name: "no schedule" }
+        name: "No schedule",
+        next: ""
       }
     };
   },
@@ -121,8 +126,8 @@ export default {
           }
         })
         .then(data => {
-          this.current_s = data.schedule;
-          this.sw = data.schedule.definition.enabled;
+          this.current_s = data;
+          this.sw = data.enabled;
           document.getElementById(this.s_option).checked = true;
           alert("scheduled");
         })
@@ -188,9 +193,9 @@ export default {
         }
       })
       .then(data => {
-        this.current_s = data.schedule;
-        this.s_option = data.schedule.definition.args[1];
-        this.sw = data.schedule.definition.enabled;
+        this.current_s = data;
+        this.s_option = data.schedule;
+        this.sw = data.enabled;
         document.getElementById(this.s_option).checked = true;
       })
       .catch(rej => {

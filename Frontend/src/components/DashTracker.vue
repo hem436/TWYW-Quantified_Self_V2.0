@@ -9,7 +9,22 @@
           <div class="chart" id="myChart"></div>
         </div>
 
-        <div class="h4 d-flex ">Log Entries</div>
+        <div class="h4 d-flex justify-content-between">
+          Log Entries
+          <a
+            class="export-p d-flex p-0 "
+            type="button"
+            @click="obj_to_csv(tracker.log_objects)"
+          >
+            <h6 class="export text-muted pt-1">Export logs</h6>
+            <img
+              src="@/assets/svg/export.svg"
+              data-bs-toggle="tooltip"
+              title="Export log"
+              style="width:30px;margin-top:0px"
+            />
+          </a>
+        </div>
         <div class="table-responsive">
           <table class="table">
             <thead>
@@ -101,8 +116,8 @@
         <form id="s_option">
           <div class="h5">
             Schedule name:
-            {{ this.current_s.definition.name }}
-            <button
+            {{ this.current_s.name
+            }}<button
               class="h6 m-2 btn btn-outline-danger"
               type="button"
               @click="test_alert"
@@ -162,16 +177,9 @@
             <label class="btn btn-outline-info " for="Every month"
               >Every month</label
             >
-            <input
-              type="radio"
-              class="btn-check"
-              name="vbtn-radio"
-              @change="onChange($event)"
-              id="Every year"
-            />
-            <label class="btn btn-outline-info " for="Every year"
-              >Every year</label
-            >
+          </div>
+          <div class="">
+            <em class="h6">Next Schedule ({{ this.current_s.next }})</em>
           </div>
           <div class="my-3" align="center">
             <button
@@ -195,6 +203,7 @@
 
 <script>
 import mychart from "../assets/mychart.js";
+import downloadBlob from "@/assets/utils.js";
 export default {
   data() {
     return {
@@ -203,7 +212,8 @@ export default {
       sw: "",
       s_option: "",
       current_s: {
-        definition: { name: "no schedule" }
+        name: "No schedule",
+        next: ""
       }
     };
   },
@@ -264,9 +274,9 @@ export default {
           }
         })
         .then(data => {
-          this.current_s = data.schedule;
-          this.s_option = data.schedule.definition.args[1];
-          this.sw = data.schedule.definition.enabled;
+          this.current_s = data;
+          this.s_option = data.schedule;
+          this.sw = data.enabled;
           document.getElementById(this.s_option).checked = true;
         })
         .catch(rej => {
@@ -340,8 +350,8 @@ export default {
           }
         })
         .then(data => {
-          this.current_s = data.schedule;
-          this.sw = data.schedule.definition.enabled;
+          this.current_s = data;
+          this.sw = data.enabled;
           document.getElementById(this.s_option).checked = true;
           alert("scheduled");
         })
@@ -382,6 +392,39 @@ export default {
           console.log(rej.error + " kindly re-login");
           return;
         });
+    },
+    obj_to_csv: async function(objArray) {
+      let array = [
+        [
+          "S.No",
+          "Log timestamp(iso)",
+          "Log note",
+          "Log value",
+          "Tracker id",
+          "Log id"
+        ]
+      ];
+      objArray.forEach((item, i) => {
+        array =
+          array +
+          "\r\n" +
+          (i + 1) +
+          "," +
+          Object.entries(item)
+            .map(v => [`"${v[1]}"`])
+            .slice(2, 5)
+            .join(",") +
+          "," +
+          Object.entries(item)
+            .map(v => [`"${v[1]}"`])
+            .slice(0, 2);
+      });
+
+      downloadBlob(
+        array,
+        `"${this.tracker.tracker_name}_logs.csv"`,
+        "text/csv;charset=utf-8;"
+      );
     }
   },
   watch: {
@@ -421,6 +464,12 @@ img {
 img:hover {
   box-shadow: 0 0 0 2px #d0d0d0;
 }
+/* .export {
+  visibility: hidden;
+}
+.export-p:hover .export {
+  visibility: visible;
+} */
 .chart {
   position: relative;
   height: 70vh;

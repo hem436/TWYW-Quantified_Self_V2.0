@@ -161,10 +161,13 @@ export default {
         array +
         Object.entries(objArray) // escape double colons
           .map(v => [v[0] + "," + `"${v[1]}"`])
-          .slice(0, 7) // quote it
-          .join("\r\n"); // comma-separated
-
-      console.log(array);
+          .slice(2, 7) // quote it
+          .join("\r\n") +
+        "\r\n" +
+        Object.entries(objArray) // escape double colons
+          .map(v => [v[0] + "," + `"${v[1]}"`])
+          .slice(0, 2) // quote it
+          .join("\r\n");
       downloadBlob(
         array,
         `"${objArray.tracker_name}.csv"`,

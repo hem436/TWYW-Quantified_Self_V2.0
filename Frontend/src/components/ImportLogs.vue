@@ -26,11 +26,13 @@
           <div class="col-8 offset-2">
             <img
               class="img img-fluid"
-              src="../../public/img/log_fields.jpg"
+              src="../../public/img/log_fields.png"
               alt=""
+              style="scale:1.5"
             />
           </div>
         </div>
+        <br />
         <!-- ############# -->
 
         <!-- ####### -->
@@ -70,38 +72,81 @@ export default {
 
         console.log(file);
         let arr = file
-          .split("\r\n")
-          .map(a => a.replaceAll('"', "").split(","))
-          .slice(3, -1);
-
-        console.log(arr);
-        this.addlog(arr);
+          .split("\n")
+          .map(a =>
+            a
+              .replaceAll('"', "")
+              .replace("\r", "")
+              .split(",")
+          )
+          .slice(1);
+        console.log(file.split("\n"));
+        arr.forEach(item => {
+          console.log("item");
+          console.log(item);
+          this.addlog(item);
+        });
       }
 
       //-------------data----------------
     },
-    addlog(obj) {
+    addlog: async function(obj) {
+      if (obj.len == 0) {
+        console.log("no fields available");
+        return;
+      }
+      let tid = obj[4];
+      let ldatetime = obj[1];
+      let lnote = obj[2];
+      let lval = obj[3];
       //----------validation----------
-      console.log(obj);
-      if (obj[0][1].length == 0) {
-        this.csv_data = "Enter valid log name";
+      if (tid == "") {
+        this.csv_data = "Enter valid tracker id";
         return;
-      } else if (obj[2][1].length == 0) {
-        this.csv_data = "Select correct log type";
-        return;
-      } else if (obj[2][1] == "Multiple-choice" && obj[3][1].length <= 1) {
-        this.csv_data = "options should be more than 1";
+      } else if (lval.length == 0) {
+        this.csv_data = "Enter a log value";
         return;
       } else {
         this.csv_data = "";
       }
-      //-------------data----------------
+      //#------validation--------
+      let currentdate = new Date();
+      let mstr = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+      ];
+      let datetime =
+        currentdate.getDate() +
+        "/" +
+        mstr[currentdate.getMonth()] +
+        "/" +
+        currentdate.getFullYear() +
+        ", " +
+        currentdate.getHours() +
+        ":" +
+        currentdate.getMinutes() +
+        ":" +
+        currentdate.getSeconds() +
+        "." +
+        currentdate.getMilliseconds();
+      if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.*$/.test(ldatetime)) {
+        datetime = this.$options.filters.date_format(ldatetime);
+      }
       let data = {
-        user_id: parseInt(this.$store.state.user_id),
-        log_name: obj[0][1],
-        log_description: obj[1][1],
-        log_type: obj[2][1],
-        settings: obj[3][1]
+        tracker_id: tid,
+        log_value: lval,
+        log_note: lnote,
+        log_datetime: datetime
       };
       console.log(data);
       fetch("http://localhost:5000/api/log", {
@@ -119,11 +164,9 @@ export default {
       })
         .then(response => {
           if (response.ok && !response.redirected) {
-            alert("Added");
+            this.csv_data = "Logged";
+            console.log("Logged");
           } else {
-            if (response.code == "401") {
-              this.$router.push("/login");
-            }
             throw {
               e_code: response.status,
               error: response.statusText
@@ -133,14 +176,17 @@ export default {
         .catch(rej => {
           console.log(rej);
           console.log(rej.error + " kindly re-login");
-          return;
+          this.$router.go("/");
         });
     },
     check() {
       let file_input = document.getElementById("csv_file");
-      // console.log(file_input);
-      if (file_input.files.length > 0) {
+      if (
+        file_input.files.length > 0 &&
+        file_input.files[0].type == "text/csv"
+      ) {
         this.validate = true;
+        this.csv_data = "";
         document.getElementById("import").disabled = false;
       } else {
         console.log("else executed");

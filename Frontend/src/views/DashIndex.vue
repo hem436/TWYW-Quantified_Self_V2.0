@@ -30,9 +30,9 @@ false<template>
                   <li>
                     <router-link to="/dashboard">Overview</router-link>
                   </li>
-                  <li>
+                  <!-- <li>
                     <a href="#" class="link-dark rounded">Activity</a>
-                  </li>
+                  </li> -->
                   <li>
                     <router-link to="/report">Reports</router-link>
                   </li>
@@ -53,9 +53,7 @@ false<template>
                   <li>
                     <router-link to="/tracker/add">New</router-link>
                   </li>
-                  <li>
-                    <router-link to="/export/tracker">Export</router-link>
-                  </li>
+
                   <li>
                     <router-link to="/import/tracker">Import</router-link>
                   </li>
@@ -79,11 +77,9 @@ false<template>
                       New
                     </router-link>
                   </li>
+
                   <li>
-                    <a href="#" class="link-dark rounded">Export</a>
-                  </li>
-                  <li>
-                    <a href="#" class="link-dark rounded">Import</a>
+                    <router-link to="/import/log">Import</router-link>
                   </li>
                   <!-- <li><a href="#" class="link-dark rounded">Generate report</a></li> -->
                 </ul>
@@ -102,7 +98,7 @@ false<template>
               <div class="collapse" id="account-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                   <li>
-                    <a href="#" class="link-dark rounded">New...</a>
+                    <router-link to="/signup"> New...</router-link>
                   </li>
                   <li>
                     <a href="#" class="link-dark rounded">Profile</a>

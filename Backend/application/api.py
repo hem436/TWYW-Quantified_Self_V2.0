@@ -42,7 +42,49 @@ def tracker_name_valid(tname):
 def tracker_type_valid(ttype):
     b= ttype in ("Integer","Numeric","Multiple-choice","Time")
     return b
+#----caching workaround--------------
+@cache.memoize(60)
+def get_user(username):
+    try:
+        if username=="*":
+            user=User.query.all()
+        elif " " not in username:
+            user=User.query.filter(User.username==username).first()
+        else:
+            return "invalid user",400
+        #print(user) #debug print
+        if user != None:
+            # print({*user,user.get_auth_token()})
+            return marshal(user,user_fields),200
+        else:
+            return "User not found",404
+    except:
+        return "Internal Server Error",500
 
+@cache.memoize(60)
+def get_tracker(tracker_id):
+    try:
+        trk=tracker.query.get(int(tracker_id))
+        if trk==None:
+            return "Tracker id not found",404
+        if trk.user_id!=current_user.id:
+            return "not authorized to access this tracker",400
+        return {**marshal(trk,tracker_fields),"log_objects":marshal(trk.logs,log_fields)}
+    except:
+        return "Internal Server Error",500
+
+@cache.memoize(60)
+def get_logs(log_id):
+    try:
+        logobj=log.query.get(int(log_id))
+        if logobj.parent.user_id!=current_user.id:
+            return "Not authorized to access this log",400
+        if logobj:
+            return marshal(logobj,log_fields)
+        else:
+            return "NOT FOUND",404
+    except:
+        return "INTERNAL SERVER ERROR",500
 
 #---------API-----------
 class LoginApi(Resource):
@@ -73,21 +115,7 @@ class LoginApi(Resource):
 class UserApi(Resource):
     @auth_token_required
     def get(self,username):
-        try:
-            if username=="*":
-                user=User.query.all()
-            elif " " not in username:
-                user=User.query.filter(User.username==username).first()
-            else:
-                return "invalid user",400
-            #print(user) #debug print
-            if user != None:
-                # print({*user,user.get_auth_token()})
-                return marshal(user,user_fields),200
-            else:
-                return "User not found",404
-        except:
-            return "Internal Server Error",500
+        return get_user(username)
 
     @auth_token_required
     def put(self,username):
@@ -151,17 +179,8 @@ class UserApi(Resource):
 class TrackerApi(Resource):
 
     @auth_token_required
-    @cache.memoize(10)
     def get(self,tracker_id):
-        try:
-            trk=tracker.query.get(int(tracker_id))
-            if trk==None:
-                return "Tracker id not found",404
-            if trk.user_id!=current_user.id:
-                return "not authorized to access this tracker",400
-            return {**marshal(trk,tracker_fields),"log_objects":marshal(trk.logs,log_fields)}
-        except:
-            return "Internal Server Error",500
+        return get_tracker(tracker_id)
 
     @auth_token_required
     def post(self):
@@ -188,6 +207,7 @@ class TrackerApi(Resource):
             tobj=tracker(user_id=int(uid),name=str(tname),desc=str(tdesc),
             type=str(ttype),settings=str(tset))
             db.session.add(tobj)
+            cache.delete_memoized(get_user,user.username)
             db.session.commit()
             return marshal(tobj,tracker_fields),200
         except:
@@ -218,6 +238,8 @@ class TrackerApi(Resource):
             elif not tracker_type_valid(ttype):
                 return "tracker type not valid",400
             q.update(update_dict)
+            cache.delete_memoized(get_tracker,q.tracker_id)
+            cache.delete_memoized(get_user,current_user.username)
             db.session.commit()
             return marshal(q.first(),tracker_fields),200
         except Exception as e:
@@ -233,22 +255,13 @@ class TrackerApi(Resource):
         tlogs=log.query.filter(log.tracker_id==tracker_id).all()
         db.session.delete(tobj)
         db.session.commit()
+        cache.delete_memoized(get_user,current_user.username)
         return "OK",200
 
 class LogApi(Resource):
     @auth_token_required
-    @cache.memoize(10)
     def get(self,log_id):
-        try:
-            logobj=log.query.get(int(log_id))
-            if logobj.parent.user_id!=current_user.id:
-                return "Not authorized to access this log",400
-            if logobj:
-                return marshal(logobj,log_fields)
-            else:
-                return "NOT FOUND",404
-        except:
-            return "INTERNAL SERVER ERROR",500
+        return get_logs(log_id)
 
     @auth_token_required
     def put(self,log_id):
@@ -267,6 +280,8 @@ class LogApi(Resource):
               t.lastupdate=ldatetime
             db.session.query(log).filter(log.log_id==log_id).update({'log_value':lval,
             'note':lnote,'log_datetime':ldatetime})
+            cache.delete_memoized(get_logs,log_id)
+            cache.delete_memoized(get_tracker,t.tracker_id)
             db.session.commit()
             return "OK",200
         except Exception as e:
@@ -288,6 +303,8 @@ class LogApi(Resource):
                   else:
                     t.lastupdate=None
                 db.session.commit()
+                cache.delete_memoized(get_logs,log_id)
+                cache.delete_memoized(get_tracker,t.tracker_id)
                 return "OK",200
             else:
                 return "NOT FOUND",404
@@ -312,6 +329,7 @@ class LogApi(Resource):
                 t.lastupdate=ldatetime
             lobj=log(tracker_id=ltid,log_datetime=ldatetime,note=lnote,log_value=lval)
             db.session.add(lobj)
+            cache.delete_memoized(get_tracker,t.tracker_id)
             db.session.commit()
             return "OK",200
         except Exception as e:

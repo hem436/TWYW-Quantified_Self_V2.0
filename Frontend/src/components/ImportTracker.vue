@@ -72,7 +72,7 @@ export default {
         let arr = file
           .split("\r\n")
           .map(a => a.replaceAll('"', "").split(","))
-          .slice(3, -1);
+          .slice(1, -3);
 
         console.log(arr);
         this.addtracker(arr);
