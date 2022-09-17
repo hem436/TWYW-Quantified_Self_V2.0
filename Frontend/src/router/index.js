@@ -27,7 +27,15 @@ const routes = [{
             title: 'Schedule Reports',
             auth:true
           }
-        },
+        },{
+            path: '/profile',
+            name: 'user.profile',
+            component: () => import('@/components/ProFile'),
+            meta: {
+              title: 'User Profile',
+              auth:true
+            }
+          },
       {
         path: '/tracker/add/',
         name: 'tracker.add',

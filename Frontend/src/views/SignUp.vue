@@ -30,7 +30,13 @@
           v-model="email"
           required
         /><br />
-
+        <h6
+          v-if="!email_validate"
+          style="font-family: zillaslab,palatino,Palatino Linotype,serif; color:red;"
+        >
+          {{ error.e }}
+        </h6>
+        <br />
         <label for="password">Enter a Password:</label>
         <input
           class="form-control"
@@ -63,7 +69,8 @@ export default {
       email: "",
       error: {
         u: "",
-        p: ""
+        p: "",
+        e: ""
       }
     };
   },
@@ -74,6 +81,9 @@ export default {
     gen_perror: function(e) {
       this.error.p = e;
     },
+    gen_eerror: function(e) {
+      this.error.e = e;
+    },
     signup: function() {
       if (this.username_validate && this.password_validate) {
         let self = this;
@@ -83,7 +93,7 @@ export default {
           email: this.email
         };
         console.log("going to signup");
-        let response = fetch("http://127.0.0.1:5000/api/user", {
+        let response = fetch(process.env.VUE_APP_BACKEND_URL + "api/user", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -138,6 +148,15 @@ export default {
         return true;
       } else {
         this.gen_perror("Password should be atleast 8 characters");
+        return false;
+      }
+    },
+    email_validate: function() {
+      let regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+      if (this.email.match(regEx)) {
+        return true;
+      } else {
+        this.gen_eerror("Invalid email");
         return false;
       }
     }

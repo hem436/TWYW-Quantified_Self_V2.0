@@ -219,19 +219,22 @@ export default {
   },
   methods: {
     refresh() {
-      // console.log(this);
+      console.log(process.env);
       var self = this;
-      fetch("http://localhost:5000/api/tracker/" + this.tracker_id, {
-        method: "GET",
-        headers: {
-          "A-T":
-            self.$Ciphers
-              .decode("Vigenere Cipher", self.$cookies.get("user") || "", [
-                "Pwd"
-              ])
-              .split(";")[2] || ""
+      fetch(
+        process.env.VUE_APP_BACKEND_URL + "api/tracker/" + this.tracker_id,
+        {
+          method: "GET",
+          headers: {
+            "A-T":
+              self.$Ciphers
+                .decode("Vigenere Cipher", self.$cookies.get("user") || "", [
+                  "Pwd"
+                ])
+                .split(";")[2] || ""
+          }
         }
-      })
+      )
         .then(response => {
           // console.log(response)
           if (response.ok && !response.redirected) {
@@ -253,7 +256,11 @@ export default {
           self.$router.push("/login"); //remember
         });
       fetch(
-        "http://localhost:5000/alert/" + this.tracker_id + "?switch=" + this.sw,
+        process.env.VUE_APP_BACKEND_URL +
+          "alert/" +
+          this.tracker_id +
+          "?switch=" +
+          this.sw,
         {
           method: "GET",
           headers: {
@@ -288,7 +295,7 @@ export default {
     del(id) {
       if (window.confirm("Want to delete this log?")) {
         let self = this;
-        fetch("http://localhost:5000/api/log/" + id, {
+        fetch(process.env.VUE_APP_BACKEND_URL + "api/log/" + id, {
           method: "DELETE",
           headers: {
             "A-T":
@@ -327,7 +334,11 @@ export default {
         schedule: this.s_option
       };
       fetch(
-        "http://localhost:5000/alert/" + this.tracker_id + "?switch=" + this.sw,
+        process.env.VUE_APP_BACKEND_URL +
+          "alert/" +
+          this.tracker_id +
+          "?switch=" +
+          this.sw,
         {
           method: "POST",
           headers: {
@@ -366,7 +377,7 @@ export default {
       let data = {
         schedule: "now"
       };
-      fetch("http://localhost:5000/alert/" + this.tracker_id, {
+      fetch(process.env.VUE_APP_BACKEND_URL + "alert/" + this.tracker_id, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -100,7 +100,8 @@ export default {
         schedule: this.s_option
       };
       fetch(
-        "http://localhost:5000/gen_report/" +
+        process.env.VUE_APP_BACKEND_URL +
+          "gen_report/" +
           this.user_id +
           "?switch=" +
           this.sw,
@@ -142,7 +143,7 @@ export default {
       let data = {
         schedule: "now"
       };
-      fetch("http://localhost:5000/gen_report/" + this.user_id, {
+      fetch(process.env.VUE_APP_BACKEND_URL + "gen_report/" + this.user_id, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -172,7 +173,11 @@ export default {
   },
   mounted() {
     fetch(
-      "http://localhost:5000/gen_report/" + this.user_id + "?switch=" + this.sw,
+      process.env.VUE_APP_BACKEND_URL +
+        "gen_report/" +
+        this.user_id +
+        "?switch=" +
+        this.sw,
       {
         method: "GET",
         headers: {

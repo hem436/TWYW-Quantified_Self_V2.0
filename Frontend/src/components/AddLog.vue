@@ -139,17 +139,20 @@ export default {
   methods: {
     refresh() {
       let self = this;
-      fetch("http://localhost:5000/api/user/" + self.$store.state.user, {
-        method: "GET",
-        headers: {
-          "A-T":
-            self.$Ciphers
-              .decode("Vigenere Cipher", self.$cookies.get("user") || "", [
-                "Pwd"
-              ])
-              .split(";")[2] || ""
+      fetch(
+        process.env.VUE_APP_BACKEND_URL + "api/user/" + self.$store.state.user,
+        {
+          method: "GET",
+          headers: {
+            "A-T":
+              self.$Ciphers
+                .decode("Vigenere Cipher", self.$cookies.get("user") || "", [
+                  "Pwd"
+                ])
+                .split(";")[2] || ""
+          }
         }
-      })
+      )
         .then(response => {
           // console.log(response)
           if (response.ok && !response.redirected) {
@@ -232,7 +235,7 @@ export default {
         log_note: document.getElementById("log_note").value
       };
 
-      fetch("http://localhost:5000/api/log", {
+      fetch(process.env.VUE_APP_BACKEND_URL + "api/log", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

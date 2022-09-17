@@ -151,7 +151,7 @@ export default {
           .catch(rej => {
             // console.log(rej)
             console.log(rej.error + " kindly re-login");
-            this.$router.push("/login"); //remember
+            this.$router.go("/login"); //remember
           });
       }
     },
@@ -198,7 +198,6 @@ a {
 }
 
 .card {
-  box-shadow: 0 6px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.1);
   background-color: #00f3ff2e;
   border-radius: 15px;
   min-height: 20rem;

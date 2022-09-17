@@ -4,8 +4,7 @@
       <div class="col-6 offset-3 d-flex justify-content-center">
         <h1>Update a Tracker</h1>
       </div>
-      <div class="col-3 d-flex justify-content-center">
-      </div>
+      <div class="col-3 d-flex justify-content-center"></div>
     </div>
     <br />
     <div class="row">
@@ -113,7 +112,7 @@ export default {
         tracker_type: this.type,
         modified_tracker_settings: this.t_option.join()
       };
-      fetch("http://localhost:5000/api/tracker/" + this.t_id, {
+      fetch(process.env.VUE_APP_BACKEND_URL + "api/tracker/" + this.t_id, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -128,8 +127,7 @@ export default {
       })
         .then(response => {
           if (response.ok && !response.redirected) {
-            alert("Updateed");
-            this.$router.go();
+            alert("Updated");
           } else {
             throw {
               e_code: response.status,
@@ -146,7 +144,7 @@ export default {
   },
   mounted() {
     if (this.t_id) {
-      fetch("http://localhost:5000/api/tracker/" + this.t_id, {
+      fetch(process.env.VUE_APP_BACKEND_URL + "api/tracker/" + this.t_id, {
         method: "GET",
         headers: {
           "A-T":

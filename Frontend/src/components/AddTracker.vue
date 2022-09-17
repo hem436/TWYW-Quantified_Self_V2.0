@@ -4,8 +4,7 @@
       <div class="col-6 offset-3 d-flex justify-content-center">
         <h1>Add a Tracker</h1>
       </div>
-      <div class="col-3 d-flex justify-content-center">
-      </div>
+      <div class="col-3 d-flex justify-content-center"></div>
     </div>
     <br />
     <div class="row">
@@ -120,7 +119,7 @@ export default {
         tracker_type: this.type,
         settings: this.t_option.join()
       };
-      fetch("http://localhost:5000/api/tracker", {
+      fetch(process.env.VUE_APP_BACKEND_URL + "api/tracker", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

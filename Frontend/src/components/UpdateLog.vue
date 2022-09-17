@@ -141,17 +141,20 @@ export default {
   methods: {
     refresh() {
       let self = this;
-      var l = fetch("http://localhost:5000/api/log/" + self.log_id, {
-        method: "GET",
-        headers: {
-          "A-T":
-            self.$Ciphers
-              .decode("Vigenere Cipher", self.$cookies.get("user") || "", [
-                "Pwd"
-              ])
-              .split(";")[2] || ""
+      var l = fetch(
+        process.env.VUE_APP_BACKEND_URL + "api/log/" + self.log_id,
+        {
+          method: "GET",
+          headers: {
+            "A-T":
+              self.$Ciphers
+                .decode("Vigenere Cipher", self.$cookies.get("user") || "", [
+                  "Pwd"
+                ])
+                .split(";")[2] || ""
+          }
         }
-      });
+      );
       l.then(response => {
         // console.log(response)
         if (response.ok && !response.redirected) {
@@ -174,19 +177,24 @@ export default {
         .then(() => {
           if (self.log != "" && self.log !== null) {
             console.log("getting tracker");
-            fetch("http://localhost:5000/api/tracker/" + self.log.tracker_id, {
-              method: "GET",
-              headers: {
-                "A-T":
-                  self.$Ciphers
-                    .decode(
-                      "Vigenere Cipher",
-                      self.$cookies.get("user") || "",
-                      ["Pwd"]
-                    )
-                    .split(";")[2] || ""
+            fetch(
+              process.env.VUE_APP_BACKEND_URL +
+                "api/tracker/" +
+                self.log.tracker_id,
+              {
+                method: "GET",
+                headers: {
+                  "A-T":
+                    self.$Ciphers
+                      .decode(
+                        "Vigenere Cipher",
+                        self.$cookies.get("user") || "",
+                        ["Pwd"]
+                      )
+                      .split(";")[2] || ""
+                }
               }
-            })
+            )
               .then(response => {
                 // console.log(response)
                 if (response.ok && !response.redirected) {
@@ -237,7 +245,7 @@ export default {
         log_note: document.getElementById("log_note").value
       };
 
-      fetch("http://localhost:5000/api/log/" + this.log.log_id, {
+      fetch(process.env.VUE_APP_BACKEND_URL + "api/log/" + this.log.log_id, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

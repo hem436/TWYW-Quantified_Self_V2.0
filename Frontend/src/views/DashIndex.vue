@@ -101,10 +101,7 @@ false<template>
                     <router-link to="/signup"> New...</router-link>
                   </li>
                   <li>
-                    <a href="#" class="link-dark rounded">Profile</a>
-                  </li>
-                  <li>
-                    <a href="#" class="link-dark rounded">Settings</a>
+                    <router-link to="/profile"> Profile</router-link>
                   </li>
                   <li>
                     <a @click="signout" class="link-dark rounded">Sign out</a>
@@ -181,7 +178,7 @@ export default {
     },
     signout() {
       this.$cookies.remove("user");
-      this.$router.go();
+      this.$router.push("/login");
     }
   }
 };

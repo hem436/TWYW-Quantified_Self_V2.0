@@ -38,7 +38,11 @@
         </button>
 
         <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" type="button">Profile</a></li>
+          <li>
+            <router-link class="dropdown-item" to="/profile">
+              Profile</router-link
+            >
+          </li>
           <hr class="dropdown-divider" />
           <li>
             <a @click="signout" class="dropdown-item" type="button">Sign out</a>

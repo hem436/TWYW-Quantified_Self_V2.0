@@ -149,7 +149,7 @@ export default {
         log_datetime: datetime
       };
       console.log(data);
-      fetch("http://localhost:5000/api/log", {
+      fetch(process.env.VUE_APP_BACKEND_URL + "api/log", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -104,7 +104,7 @@ export default {
         settings: obj[3][1]
       };
       console.log(data);
-      fetch("http://localhost:5000/api/tracker", {
+      fetch(process.env.VUE_APP_BACKEND_URL + "api/tracker", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
