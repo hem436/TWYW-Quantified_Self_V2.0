@@ -11,12 +11,12 @@ from datetime import datetime
 from flask_security import hash_password,verify_password,login_user,login_required,current_user
 from application import task
 
-login_manager=app.login_manager
-@login_manager.user_loader
-def load_user(id):
-    u=User.query.filter(User.fs_uniquifier==id).one()
-    # print("user in load user=",u)
-    return u
+# @login_manager.user_loader
+# def load_user(id):
+#     print(id)
+#     u=User.query.filter(User.fs_uniquifier==id).one()
+#     # print("user in load user=",u)
+#     return u
 
 
 #-------------------------

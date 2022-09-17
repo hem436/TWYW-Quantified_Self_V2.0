@@ -20,7 +20,10 @@ import numpy as np
 #localhost redis
 r=redis.Redis(db=1)
 r.flushall()
-
+for i in User.query.all():
+    args=[i.id,"Every month"]
+    duration=crontab(0,0,day_of_month=1)
+    RedBeatSchedulerEntry(f'report-{i.id}', 'application.task.gen_report',duration, args,app=celery).save()
 #------functions-----------------
 
 def decode_dict(d):
@@ -49,7 +52,7 @@ def send_mail(recipient,subject,content="String",message=None,attach_file=None):
             with open(attach_file,"rb") as attachment:
                 part.set_payload(attachment.read())
                 encoders.encode_base64(part)
-            part.add_header('Content-Disposition',f'attachment;filename="MonthlyReport.pdf"')
+            part.add_header('Content-Disposition',f'attachment;filename="Report.pdf"')
             msg.attach(part)
         smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         smtp_server.ehlo()
@@ -69,10 +72,10 @@ def calender(dates,duration,list):
              date_label=True, weekday_label=True,
              month_label=True,year_label=False,
              colorbar=True,fontfamily="monospace",
-             fontsize=15,titlesize="large",
+             fontsize=16,titlesize="large",
              dpi=200)
-    fig = plt.gcf()
-    fig.savefig("exported_files/charts/calender.svg")
+    fig=plt.gcf()
+    fig.savefig("exported_files/charts/calender.png")
     return
 
 
@@ -218,7 +221,7 @@ def gen_report(id,s=""):
         duration=[datetime.now().replace(hour=0,minute=0,second=0,microsecond=0),datetime.now().replace(hour=0,minute=0,second=0,microsecond=0)+timedelta(days=-7)]
     elif s=="Every day":
         duration=[datetime.now().replace(hour=0,minute=0,second=0,microsecond=0),datetime.now().replace(hour=23,minute=59,second=59,microsecond=0)]
-    elif s=="Every month" or s=="*":
+    elif s=="Every month" or s=="":
         duration=[]
         duration.append(datetime.now().replace(day=1,hour=0,minute=0,second=0,microsecond=0))
         if duration[0].month == 12:
@@ -285,4 +288,3 @@ def gen_report(id,s=""):
     print("sending report email")
     send_mail(recipient,subject,'html',email_text,f'exported_files/pdf/{user.username}.pdf')
     return "Report sent",200
-    #

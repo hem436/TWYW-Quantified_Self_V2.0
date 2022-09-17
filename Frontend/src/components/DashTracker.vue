@@ -179,7 +179,9 @@
             >
           </div>
           <div class="">
-            <em class="h6">Next Schedule ({{ this.current_s.next }})</em>
+            <em class="h6"
+              >Next Schedule ({{ this.current_s.next.slice(0, -4) }})</em
+            >
           </div>
           <div class="my-3" align="center">
             <button

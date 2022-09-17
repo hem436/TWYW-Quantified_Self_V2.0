@@ -1,6 +1,5 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
-
 class Config():
     DEBUG = False
     SQLITE_DB_DIR = None
@@ -31,8 +30,9 @@ class LocalDevelopmentConfig(Config):
     CACHE_TYPE="RedisCache"
     CACHE_REDIS_HOST="localhost"
     CACHE_REDIS_PORT="6379"
-    SERVER_EMAIL="hemantnohack@gmail.com"
-    EMAIL_PWD="acrugxtlyiqkkvje"
+    SERVER_EMAIL=os.getenv("SERVER_EMAIL")
+    EMAIL_PWD=os.getenv("EMAIL_PWD")
+
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///quantified_self_database.sqlite3'
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
     # app.config['SECRET_KEY']='myappquantifie'

@@ -1,6 +1,6 @@
 from flask import redirect, render_template, request
 from flask_restful  import Resource,fields,marshal_with,marshal
-from flask_security import auth_required,auth_token_required,hash_password,login_user,verify_password,current_user
+from flask_security import auth_required,auth_token_required,hash_password,login_user,verify_password,current_user,logout_user
 from database import User,tracker,log,user_datastore,db
 import bcrypt
 from datetime import datetime
@@ -27,6 +27,7 @@ log_fields={
 user_fields={
     "user_id":fields.String(attribute='id'),
     "username":fields.String,
+    "email":fields.String,
     "trackers":fields.List(fields.Nested(tracker_fields))
 }
 #------------validation functions----------
@@ -93,7 +94,6 @@ class LoginApi(Resource):
     def post(self):
         try:
             loginuser=request.json
-            print(loginuser)
             username=loginuser["username"]
             pwd=loginuser["password"]
             user_valid=username and username.isalnum()
@@ -107,17 +107,19 @@ class LoginApi(Resource):
                         "auth_token":dbuser.get_auth_token()},200
                     else:
                         print("invalid_password")
+                        return "wrong password",400
                 else:
                     print("user not found")
+                    return "user not found",400
         except Exception as e:
             print(e)
 
 class UserApi(Resource):
-    @auth_token_required
+    @auth_required()
     def get(self,username):
         return get_user(username)
 
-    @auth_token_required
+    @auth_required()
     def put(self,username):
         try:
             newdata=request.json
@@ -125,35 +127,47 @@ class UserApi(Resource):
             pdata=q.one()
             if pdata==None:
                 return "User not found",404
-            modified_username=newdata["modified_username"]
-            modified_password=newdata["modified_password"]
-            b1=(pdata.username!=modified_username)
-            b2=(pdata.password!=modified_password)
-            if  b1 or b2:
-                uname_valid=username_valid(modified_username)
-                pass_valid=password_valid(modified_password)
-                if uname_valid and pass_valid:
-                    q.update({"username":str(modified_username),
-                    "password":str(modified_password)})
-                    db.session.commit()
+            modified_username=newdata.get("modified_username")
+            password=newdata.get("old_password")
+            modified_email=newdata.get("modified_email")
+            uname_valid=modified_username.isalnum()
+            if verify_password(password,pdata.password):
+                if uname_valid:
+                    if newdata.get("new_password"):
+                        modified_password=newdata.get("new_password")
+                        if not password_valid(modified_password):
+                            return "modified password not valid",400
+                        else:
+                            q.update({"username":str(modified_username),
+                            "password":hash_password(modified_password),
+                            "email":str(modified_email)})
+                            db.session.commit()
+                    else:
+                        q.update({"username":str(modified_username),
+                        "email":str(modified_email)})
+                        db.session.commit()
                 elif not uname_valid:
                     return "Modified Username is invalid",400
-                elif not pass_valid:
-                    return "Modified Password is invalid",400
-            return self.get(modified_username)
-        except:
-            return "Internal Server Error",500
+            else:
+                return "wrong password",400
+            return {**marshal(pdata,user_fields),
+            "auth_token":pdata.get_auth_token()},200
+        except Exception as e:
+            return e,500
 
-    @auth_token_required
+    @auth_required()
     def delete(self,username):
         try:
-            user=User.query.filter(User.username==username).first()
-            if user==None:
-                return "User not found",404
-            else:
-                db.session.delete(user)
-                db.session.commit()
-            return "OK",200
+            loginuser=request.json
+            pwd=loginuser["password"]
+            if (username,) in db.session.query(User.username).all():
+                dbuser=User.query.filter(User.username==username).first()
+                if verify_password(pwd,dbuser.password):
+                    db.session.delete(dbuser)
+                    db.session.commit()
+                else:
+                    return "invalid password",400
+            return "Deleted",200
         except:
             return "Internal Server Error",500
 
@@ -178,11 +192,11 @@ class UserApi(Resource):
 
 class TrackerApi(Resource):
 
-    @auth_token_required
+    @auth_required()
     def get(self,tracker_id):
         return get_tracker(tracker_id)
 
-    @auth_token_required
+    @auth_required()
     def post(self):
         try:
             tdata=request.json
@@ -213,7 +227,7 @@ class TrackerApi(Resource):
         except:
             return "Internal Server Error",500
 
-    @auth_token_required
+    @auth_required()
     def put(self,tracker_id):
         try:
             pdata=request.json
@@ -238,7 +252,7 @@ class TrackerApi(Resource):
             elif not tracker_type_valid(ttype):
                 return "tracker type not valid",400
             q.update(update_dict)
-            cache.delete_memoized(get_tracker,q.tracker_id)
+            cache.delete_memoized(get_tracker,q.first().tracker_id)
             cache.delete_memoized(get_user,current_user.username)
             db.session.commit()
             return marshal(q.first(),tracker_fields),200
@@ -247,7 +261,7 @@ class TrackerApi(Resource):
             return "Internal Server Error",500
 
 
-    @auth_token_required
+    @auth_required()
     def delete(self,tracker_id):
         tobj=tracker.query.get(int(tracker_id))
         if tobj.user_id!=current_user.id:
@@ -259,11 +273,11 @@ class TrackerApi(Resource):
         return "OK",200
 
 class LogApi(Resource):
-    @auth_token_required
+    @auth_required()
     def get(self,log_id):
         return get_logs(log_id)
 
-    @auth_token_required
+    @auth_required()
     def put(self,log_id):
         try:
             if (log_id,) not in db.session.query(log.log_id).all():
@@ -287,7 +301,7 @@ class LogApi(Resource):
         except Exception as e:
             print(e)
             return "Internal Server Error",500
-    @auth_token_required
+    @auth_required()
     def delete(self,log_id):
         try:
             l=log.query.get(int(log_id))
@@ -312,7 +326,7 @@ class LogApi(Resource):
             print(e)
             return "INTERNAL SERVER ERROR",500
 
-    @auth_token_required
+    @auth_required()
     def post(self):
         try:
             ldata=request.json
