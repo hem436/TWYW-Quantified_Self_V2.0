@@ -140,7 +140,7 @@ export default {
             // console.log(response)
             if (response.ok && !response.redirected) {
               alert("Deleted");
-              this.$router.go();
+              this.refresh();
             } else {
               throw {
                 e_code: response.status,

@@ -60,7 +60,7 @@ export default {
   methods: {
     signout() {
       this.$cookies.remove("user");
-      this.$router.go();
+      this.$router.push("/login");
     }
   }
 };

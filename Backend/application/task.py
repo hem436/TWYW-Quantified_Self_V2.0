@@ -13,6 +13,7 @@ from email import encoders
 from celery.schedules import schedule, crontab
 from redbeat import RedBeatSchedulerEntry
 from weasyprint import HTML,CSS
+from httplib2 import Http
 import json,smtplib,july,os,redis
 import numpy as np
 
@@ -25,6 +26,24 @@ for i in User.query.all():
     duration=crontab(0,0,day_of_month=1)
     RedBeatSchedulerEntry(f'report-{i.id}', 'application.task.gen_report',duration, args,app=celery).save()
 #------functions-----------------
+
+def gchat(webhook,message=None,attach_file=None):
+    """Google Chat incoming webhook quickstart."""
+    try:
+        bot_message = {
+            'text': message}
+        message_headers = {'Content-Type': 'application/json; charset=UTF-8'}
+        http_obj = Http()
+        response = http_obj.request(
+            uri=webhook,
+            method='POST',
+            headers=message_headers,
+            body=json.dumps(bot_message),
+        )
+        print("gchat sent")
+    except Exception as e:
+        print(e)
+
 
 def decode_dict(d):
     result = {}
@@ -144,9 +163,9 @@ def report_schedule(id):
 def scheule_alert(tracker_id):
     if request.method=="POST":
         data=request.json
-        if data and data["schedule"]:
+        if data and data.get("schedule"):
             if data.get('schedule')=='now':
-                send_alert.delay(tracker_id)
+                send_alert.delay(tracker_id,data.get("schedule"),data.get("webhook"))
                 return "alert sent",200
             elif data.get('schedule')=='Every minute':
                 duration=crontab(minute="*")
@@ -162,7 +181,8 @@ def scheule_alert(tracker_id):
                 return "Bad Request",400
         else:
             return "Bad Request",400
-        entry = RedBeatSchedulerEntry(f'alert-{tracker_id}', 'application.task.send_alert',duration, args=[tracker_id,data.get("schedule")],app=celery)
+        print(data.get("webhook"))
+        entry = RedBeatSchedulerEntry(f'alert-{tracker_id}', 'application.task.send_alert',duration,                 args=[tracker_id,data.get("schedule"),data.get("webhook")],app=celery)
         #bug for startswith was for app=celery#
         # entry.save()
     if request.method=="GET":
@@ -177,12 +197,12 @@ def scheule_alert(tracker_id):
     elif switch=="true":
         entry.enabled=True
     entry.save()
-    s={"schedule":None}
     k=r.keys(f"redbeat:alert-{tracker_id}")
     print(k)
+    s={}
     if len(k) > 0:
         s["name"]=entry.name
-        s["schedule"]=entry.args[1]
+        s["args"]=entry.args
         s["enabled"]=entry.enabled
         s["next"]=entry.next().due_at+timedelta(hours=5,minutes=30)#for ist
         return s,200
@@ -192,22 +212,34 @@ def scheule_alert(tracker_id):
 
 #-----------celery_tasks-------------
 @celery.task()
-def send_alert(tracker_id,s=None):
+def send_alert(tracker_id,s=None,webhook=None):
     t=tracker.query.get(tracker_id)
     if t:
         user=t.parent
     else:
         return "Not found",404
+
     #-----sending email---
-    recipient = user.email
-    subject = f'Alert: Add log to {t.name}'
-    email_text = f"""Dear {user.username} you need to add a log to:<br>
-    Tracker_name: {t.name},<br>
-    {t.desc}<br>
-    Link:   <a href='http://localhost:8080/log/{tracker_id}'>Open in Browser</a>
-    """
-    print("sending alert email")
-    send_mail(recipient,subject,'html',email_text)
+    print(webhook)
+    if webhook and webhook!="":
+        message=f"""\
+Dear {user.username},
+Please add a new log to: http://localhost:8080/log/{t.tracker_id}
+Tracker name: {t.name}
+{t.desc}
+        """
+        print("sending gchat alert")
+        gchat(webhook,message)
+    else:
+        recipient = user.email
+        subject = f'Alert: Add log to {t.name}'
+        message=f"""Dear {user.username} you need to add a log to:<br>
+        Tracker name: {t.name},<br>
+        {t.desc}<br>
+        Link:  <a href='http://localhost:8080/log/{t.tracker_id}'>Open in Browser</a>
+        """
+        print("sending alert email")
+        send_mail(recipient,subject,'html',message)
     return "Alert sent",200
 
 @celery.task()

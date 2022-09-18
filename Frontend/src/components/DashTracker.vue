@@ -116,17 +116,10 @@
         <form id="s_option">
           <div class="h5">
             Schedule name:
-            {{ this.current_s.name
-            }}<button
-              class="h6 m-2 btn btn-outline-danger"
-              type="button"
-              @click="test_alert"
-            >
-              test now
-            </button>
+            {{ this.current_s.name }}
           </div>
           <div class="form-check form-switch">
-            <label class="form-check-label" for="switch">On/Off</label>
+            <label class="form-check-label" for="switch">Off/On</label>
             <input
               class="form-check-input"
               type="checkbox"
@@ -135,6 +128,29 @@
               v-model="sw"
             />
           </div>
+          <div class="form-check form-switch">
+            <label class="form-check-label" for="eorw">Email/Webhook</label
+            ><button
+              class="h6 mx-2 p-1 btn btn-outline-danger"
+              type="button"
+              @click="test_alert"
+              style="box-shadow:0 0 0 0"
+            >
+              Test now
+            </button>
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              name="eorw"
+              v-model="eorw"
+            />
+          </div>
+          <div class="d-flex" v-if="eorw">
+            <label for="webhook">Webhook:</label>
+            <input type="text" name="webhook" v-model="webhook" />
+          </div>
+          <div v-else><br /></div>
 
           <div class="btn-group my-4">
             <input
@@ -212,6 +228,8 @@ export default {
       tracker_id: this.$route.params.id,
       tracker: "",
       sw: "",
+      eorw: "",
+      webhook: "",
       s_option: "",
       current_s: {
         name: "No schedule",
@@ -221,7 +239,6 @@ export default {
   },
   methods: {
     refresh() {
-      console.log(process.env);
       var self = this;
       fetch(
         process.env.VUE_APP_BACKEND_URL + "api/tracker/" + this.tracker_id,
@@ -283,9 +300,12 @@ export default {
           }
         })
         .then(data => {
+          console.log(data);
           this.current_s = data;
-          this.s_option = data.schedule;
+          this.s_option = data.args[1];
           this.sw = data.enabled;
+          this.eorw = data.args[2].length > 0;
+          this.webhook = data.args[2];
           document.getElementById(this.s_option).checked = true;
         })
         .catch(rej => {
@@ -309,10 +329,8 @@ export default {
           }
         })
           .then(response => {
-            // console.log(response)
             if (response.ok && !response.redirected) {
               this.refresh();
-              // window.location.reload();
               return "";
             } else {
               throw {
@@ -332,8 +350,17 @@ export default {
       this.sw = true;
     },
     schedule_alert() {
+      if (this.eorw) {
+        if (this.webhook === "") {
+          alert("please add google chat webhook url");
+          return;
+        }
+      } else {
+        this.webhook = "";
+      }
       let data = {
-        schedule: this.s_option
+        schedule: this.s_option,
+        webhook: this.webhook
       };
       fetch(
         process.env.VUE_APP_BACKEND_URL +
@@ -365,6 +392,8 @@ export default {
         .then(data => {
           this.current_s = data;
           this.sw = data.enabled;
+          this.eorw = data.args[2].length > 0;
+          this.webhook = data.args[2];
           document.getElementById(this.s_option).checked = true;
           alert("scheduled");
         })
@@ -376,8 +405,17 @@ export default {
         });
     },
     test_alert() {
+      if (this.eorw) {
+        if (this.webhook === "") {
+          alert("please add google chat webhook url");
+          return;
+        }
+      } else {
+        this.webhook = "";
+      }
       let data = {
-        schedule: "now"
+        schedule: "now",
+        webhook: this.webhook
       };
       fetch(process.env.VUE_APP_BACKEND_URL + "alert/" + this.tracker_id, {
         method: "POST",

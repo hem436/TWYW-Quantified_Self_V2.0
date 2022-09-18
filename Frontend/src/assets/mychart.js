@@ -58,12 +58,10 @@ option = {
       start: 0,
       end: 100
     },
-    {
-      type: "inside",
-      realtime: true,
-      start: 0,
-      end: 100
-    }
+      {
+        type: 'slider',
+        orient: 'vertical',
+      }
   ],
   xAxis: [
     {
