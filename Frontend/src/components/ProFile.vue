@@ -159,17 +159,20 @@ export default {
     },
     refresh() {
       let self = this;
-      fetch(process.env.VUE_APP_BACKEND_URL + this.$store.state.user, {
-        method: "GET",
-        headers: {
-          "A-T":
-            this.$Ciphers
-              .decode("Vigenere Cipher", this.$cookies.get("user") || "", [
-                "Pwd"
-              ])
-              .split(";")[2] || ""
+      fetch(
+        process.env.VUE_APP_BACKEND_URL + "api/user/" + this.$store.state.user,
+        {
+          method: "GET",
+          headers: {
+            "A-T":
+              this.$Ciphers
+                .decode("Vigenere Cipher", this.$cookies.get("user") || "", [
+                  "Pwd"
+                ])
+                .split(";")[2] || ""
+          }
         }
-      })
+      )
         .then(response => {
           // console.log(response)
           if (response.ok && !response.redirected) {
