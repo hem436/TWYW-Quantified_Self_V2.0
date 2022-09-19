@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import cookies from 'vue-cookies'
-import Ciphers from '../assets/ciphers.js'
+import Ciphers from '../scripts/ciphers.js'
 
 Vue.use(Vuex)
 
@@ -39,7 +39,9 @@ export default new Vuex.Store({
       state.token=obj.auth_token;
     },
     set_tracker(state,obj){
-      state.trackers.push(obj)
+      state.trackers.push(obj)},
+    delete_trackers(state){
+      state.trackers=[]
     }
   },
   actions: {

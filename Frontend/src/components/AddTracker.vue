@@ -134,7 +134,7 @@ export default {
       })
         .then(response => {
           if (response.ok && !response.redirected) {
-            alert("Added");
+            return response.json();
           } else {
             if (response.code == "401") {
               this.$router.push("/login");
@@ -144,6 +144,10 @@ export default {
               error: response.statusText
             };
           }
+        })
+        .then(data => {
+          this.$store.commit("set_tracker", data);
+          alert("Added");
         })
         .catch(rej => {
           console.log(rej);

@@ -10,8 +10,8 @@ import './registerServiceWorker'
 import router from './router'
 import store from './store'
 import VueCookies from 'vue-cookies'
-import Ciphers from './assets/ciphers.js'
-import * as echarts from './assets/echarts.js'
+import Ciphers from './scripts/ciphers.js'
+import * as echarts from './scripts/echarts.js'
 
 Vue.use(VueCookies);
 Vue.prototype.$echarts= echarts;

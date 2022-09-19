@@ -2,7 +2,7 @@
   <div class="userprofile">
     <div class="row" align="center">
       <h3>Profile</h3>
-      <br /><br />
+      <br />
     </div>
     <br />
     <div class="row">

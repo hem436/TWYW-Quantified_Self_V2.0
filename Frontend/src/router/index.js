@@ -37,7 +37,7 @@ const routes = [{
             }
           },
       {
-        path: '/tracker/add/',
+        path: '/tracker/add',
         name: 'tracker.add',
         component: () => import('@/components/AddTracker')
       },

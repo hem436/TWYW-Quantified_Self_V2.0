@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import downloadBlob from "@/assets/utils.js";
+import downloadBlob from "@/scripts/utils.js";
 export default {
   data() {
     return {
@@ -140,6 +140,8 @@ export default {
             // console.log(response)
             if (response.ok && !response.redirected) {
               alert("Deleted");
+              this.$store.commit("delete_trackers");
+              this.trackers = this.$store.state.trackers;
               this.refresh();
             } else {
               throw {

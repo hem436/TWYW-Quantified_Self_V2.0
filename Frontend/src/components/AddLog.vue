@@ -126,7 +126,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import stopwatch from "@/assets/stopwatch.js";
+import stopwatch from "@/scripts/stopwatch.js";
 
 export default {
   data() {

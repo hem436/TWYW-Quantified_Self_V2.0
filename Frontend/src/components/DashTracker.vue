@@ -220,8 +220,8 @@
 </template>
 
 <script>
-import mychart from "../assets/mychart.js";
-import downloadBlob from "@/assets/utils.js";
+import mychart from "../scripts/mychart.js";
+import downloadBlob from "@/scripts/utils.js";
 export default {
   data() {
     return {
