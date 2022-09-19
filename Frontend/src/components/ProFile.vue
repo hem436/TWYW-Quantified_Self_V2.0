@@ -159,7 +159,7 @@ export default {
     },
     refresh() {
       let self = this;
-      fetch("http://localhost:5000/api/user/" + this.$store.state.user, {
+      fetch(process.env.VUE_APP_BACKEND_URL + this.$store.state.user, {
         method: "GET",
         headers: {
           "A-T":

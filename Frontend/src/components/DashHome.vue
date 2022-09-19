@@ -90,7 +90,7 @@ export default {
   methods: {
     refresh() {
       let self = this;
-      fetch("http://localhost:5000/api/user/" + this.$store.state.user, {
+      fetch(process.env.VUE_APP_BACKEND_URL + this.$store.state.user, {
         method: "GET",
         headers: {
           "A-T":
@@ -125,7 +125,7 @@ export default {
     },
     del_trk(tid) {
       if (window.confirm("Delete this tracker along with all logs?")) {
-        fetch("http://localhost:5000/api/tracker/" + tid, {
+        fetch(process.env.VUE_APP_BACKEND_URL + tid, {
           method: "DELETE",
           headers: {
             "A-T":
