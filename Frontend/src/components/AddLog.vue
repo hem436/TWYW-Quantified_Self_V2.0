@@ -1,14 +1,14 @@
 <template lang="html">
   <div class="addlogs">
     <div class="row">
-      <div class="col-6 offset-3 d-flex justify-content-center">
+      <div class="col-sm-6 offset-sm-3 d-flex justify-content-center">
         <h1>Add a log</h1>
       </div>
       <div class="col-3 d-flex justify-content-center"></div>
     </div>
     <br />
     <div class="row">
-      <div class="col-6 offset-3 h5 ">
+      <div class="col col-sm-6 offset-sm-3 h5 ">
         <div class="row m-3">
           <div class="col-6 ">
             Add log to Tracker:
@@ -16,7 +16,7 @@
           <div class="col-6">
             <select
               id="sel_trk"
-              class="sel_trk"
+              class="sel_trk form-control"
               name="sel_trk"
               v-model="tracker"
               v-if="this.rtracker_id == 'null'"
@@ -48,6 +48,7 @@
           </div>
           <div class="col-6">
             <input
+              class="form-control"
               step="1"
               type="Number"
               id="log_val"
@@ -65,6 +66,7 @@
           </div>
           <div class="col-6">
             <input
+              class="form-control"
               type="Number"
               id="log_val"
               name="log_val"
@@ -80,9 +82,26 @@
             <label for="log_val">Log value</label>
           </div>
           <div class="col-6">
-            <input id="log_val" type="text" :value="time" />
-            <button id="start" @click="startwatch()">Start</button>
-            <button id="reset" @click="resetwatch().reset()">Reset</button>
+            <input
+              class="form-control"
+              id="log_val"
+              type="text"
+              :value="time"
+            />
+            <button
+              class="btn btn-outline-danger m-1"
+              id="start"
+              @click="startwatch()"
+            >
+              Start
+            </button>
+            <button
+              class="btn btn-outline-danger m-1"
+              id="reset"
+              @click="resetwatch().reset()"
+            >
+              Reset
+            </button>
           </div>
         </div>
 
@@ -91,7 +110,7 @@
             <label for="log_val">Log value</label>
           </div>
           <div class="col-6">
-            <select id="log_val" name="log_val">
+            <select class="form-control" id="log_val" name="log_val">
               <option
                 v-for="(item, index) in tracker.settings.split(',')"
                 :key="index"
@@ -107,6 +126,7 @@
           </div>
           <div class="col-6">
             <textarea
+              class="form-control"
               id="log_note"
               name="note"
               placeholder="Note/Remark"
@@ -114,7 +134,7 @@
           </div>
         </div>
         <div class="row m-3 ">
-          <div class="col justify-content-center">
+          <div class="col d-flex justify-content-center">
             <button
               class="btn btn-outline-info"
               type="submit"
@@ -123,9 +143,9 @@
             >
               Submit
             </button>
-            <div id="error"></div>
           </div>
         </div>
+        <div class="error" id="error"></div>
       </div>
     </div>
   </div>

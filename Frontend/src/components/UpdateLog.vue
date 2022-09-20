@@ -1,14 +1,14 @@
 <template lang="html">
   <div class="addlogs">
     <div class="row">
-      <div class="col-6 offset-3 d-flex justify-content-center">
+      <div class="col col-sm-6 offset-sm-3 d-flex justify-content-center">
         <h1>Update a log</h1>
       </div>
-      <div class="col-3 d-flex justify-content-center"></div>
+      <br />
     </div>
     <br />
     <div class="row">
-      <div class="col-6 offset-3 h5 ">
+      <div class="col col-sm-6 offset-sm-3 h5 ">
         <div class="row m-3">
           <div class="col-6 ">
             Tracker:
@@ -34,6 +34,7 @@
           </div>
           <div class="col-6">
             <input
+              class="form-control"
               type="text"
               id="log_datetime"
               :value="log.log_datetime | date_format"
@@ -48,6 +49,7 @@
           </div>
           <div class="col-6">
             <input
+              class="form-control"
               type="Number"
               id="log_val"
               name="log_val"
@@ -107,6 +109,7 @@
           </div>
           <div class="col-6">
             <textarea
+              class="form-control"
               id="log_note"
               name="note"
               placeholder="Note/Remark"

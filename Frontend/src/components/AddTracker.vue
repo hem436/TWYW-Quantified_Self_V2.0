@@ -1,20 +1,20 @@
 <template>
   <div class="add_tracker">
     <div class="row">
-      <div class="col-6 offset-3 d-flex justify-content-center">
+      <div class=" col col-sm-6 offset-sm-3 d-flex justify-content-center">
         <h1>Add a Tracker</h1>
       </div>
-      <div class="col-3 d-flex justify-content-center"></div>
+      <br />
     </div>
     <br />
     <div class="row">
-      <div class="col-6 offset-3 h5 ">
+      <div class="col col-sm-6 offset-sm-3 h5 ">
         <div class="row m-3">
           <div class="col-6 ">
             Tracker Name:
           </div>
           <div class="col-6">
-            <input type="text" v-model="t_name" value="" />
+            <input class="form-control" type="text" v-model="t_name" value="" />
           </div>
         </div>
         <div class="row m-3">
@@ -22,7 +22,7 @@
             Tracker type:
           </div>
           <div class="col-6">
-            <select id="t_type" v-model="type">
+            <select class="form-select" id="t_type" v-model="type">
               <option value="Integer">Integer</option>
               <option value="Numeric">Numeric</option>
               <option value="Time">Time</option>
@@ -36,15 +36,25 @@
             <label for="t_option">Options</label>
           </div>
           <div class="col-6">
-            <input type="text" id="option" value="" />
-            <button type="button" name="button" @click="addopt">
+            <input class="form-control" type="text" id="option" value="" />
+            <button
+              class="btn btn-outline-info"
+              type="button"
+              name="button"
+              @click="addopt"
+            >
               add options
             </button>
-            <button type="button" name="button" @click="remopt">
+            <button
+              class="btn btn-outline-info"
+              type="button"
+              name="button"
+              @click="remopt"
+            >
               remove
             </button>
 
-            <div>{{ t_option.join() }}</div>
+            <h6>{{ t_option.join() }}</h6>
           </div>
         </div>
         <!-- ####### -->
@@ -54,6 +64,7 @@
           </div>
           <div class="col-6">
             <textarea
+              class="form-control"
               v-model="t_desc"
               name="desc"
               placeholder="Note/Remark"
@@ -70,8 +81,10 @@
             >
               Submit
             </button>
-            <div class="error">{{ error }}</div>
           </div>
+        </div>
+        <div class="error h6 text-center">
+          {{ error }}
         </div>
       </div>
     </div>

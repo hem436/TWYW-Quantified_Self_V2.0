@@ -207,6 +207,11 @@ a {
   color: #000000;
   text-decoration: none;
 }
+.error {
+  font-family: zillaslab, palatino, Palatino Linotype, serif;
+  color: red;
+}
+
 .b-example-divider {
   flex-shrink: 0;
   width: 1.5rem;

@@ -14,7 +14,7 @@
             Tracker Name:
           </div>
           <div class="col-6">
-            <input type="text" v-model="t_name" value="" />
+            <input class="form-control" type="text" v-model="t_name" value="" />
           </div>
         </div>
         <div class="row m-3">
@@ -31,7 +31,7 @@
             <label for="t_option">Options</label>
           </div>
           <div class="col-6">
-            <input type="text" id="option" value="" />
+            <input class="form-control" type="text" id="option" value="" />
             <button type="button" name="button" @click="addopt">
               update options
             </button>
@@ -49,6 +49,7 @@
           </div>
           <div class="col-6">
             <textarea
+              class="form-control"
               v-model="t_desc"
               name="desc"
               placeholder="Note/Remark"
