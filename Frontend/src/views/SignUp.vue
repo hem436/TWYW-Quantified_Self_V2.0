@@ -6,7 +6,7 @@
     </div>
     <br />
     <div class="row">
-      <div class="form col-sm-6 offset-sm-3">
+      <div class="form col-8 offset-2 col-sm-6 offset-sm-3">
         <label for="username">Username:</label>
         <input
           class="form-control"
@@ -53,7 +53,7 @@
         >
           {{ error.p }}
         </h6>
-        Already have an account? <a href="/">Login</a>
+        Already have an account? <router-link to="/login">Login</router-link>
       </div>
     </div>
   </div>

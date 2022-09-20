@@ -116,7 +116,14 @@
         </div>
         <div class="row m-3 ">
           <div class="col d-flex justify-content-center">
-            <button type="submit" name="button" @click="postlog">Submit</button>
+            <button
+              class="btn btn-outine-info"
+              type="submit"
+              name="button"
+              @click="postlog"
+            >
+              Submit
+            </button>
             <div id="error"></div>
           </div>
         </div>

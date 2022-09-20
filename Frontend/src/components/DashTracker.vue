@@ -473,7 +473,7 @@ export default {
 
       downloadBlob(
         array,
-        `"${this.tracker.tracker_name}_logs.csv"`,
+        this.tracker.tracker_name + "_logs.csv",
         "text/csv;charset=utf-8;"
       );
     }

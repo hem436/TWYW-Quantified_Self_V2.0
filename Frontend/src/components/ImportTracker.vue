@@ -13,7 +13,7 @@
             Upload csv file:
           </div>
           <div class="col-6">
-            <input type="file" id="csv_file" />
+            <input class="form-control" type="file" id="csv_file" />
           </div>
         </div>
         <div class="row">
@@ -37,10 +37,21 @@
 
         <div class="row m-3 ">
           <div class="col d-flex justify-content-center">
-            <button type="submit" id="check" @click="check">
+            <button
+              class="btn btn-outline-info"
+              type="submit"
+              id="check"
+              @click="check"
+            >
               Check
             </button>
-            <button type="submit" id="import" @click="imptracker" disabled>
+            <button
+              class="btn btn-outline-danger"
+              type="submit"
+              id="import"
+              @click="imptracker"
+              disabled
+            >
               Import
             </button>
           </div>

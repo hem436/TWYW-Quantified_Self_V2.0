@@ -62,7 +62,12 @@
         </div>
         <div class="row m-3 ">
           <div class="col d-flex justify-content-center">
-            <button type="submit" name="button" @click="addtracker">
+            <button
+              class="btn btn-outline-info"
+              type="submit"
+              name="button"
+              @click="addtracker"
+            >
               Submit
             </button>
             <div class="error">{{ error }}</div>

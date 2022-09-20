@@ -175,7 +175,7 @@ export default {
           .join("\r\n");
       downloadBlob(
         array,
-        `"${objArray.tracker_name}.csv"`,
+        objArray.tracker_name + ".csv",
         "text/csv;charset=utf-8;"
       );
     }
