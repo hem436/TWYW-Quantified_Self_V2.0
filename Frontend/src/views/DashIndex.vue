@@ -1,18 +1,15 @@
-false<template>
+<template>
   <div id="dash container-fluid">
     <div class="row d-flex">
       <nav
         id="sidebarMenu"
         class=" border col-md-3 col-lg-2 d-md-block sidebar collapse"
       >
-        <div class="">
+        <div align="center">
           <a
             href="#"
-            class="d-flex align-items-center pt-4 pb-3 link-dark text-decoration-none border-bottom"
+            class="d-flex justify-content-center pt-4 pb-3 link-dark text-decoration-none border-bottom"
           >
-            <svg class="bi me-2" width="30" height="24">
-              <use href="@/assets/svg/details.svg" />
-            </svg>
             <span class="fs-4 fw-semibold">Menu</span>
           </a>
           <ul class="list-unstyled ps-0">

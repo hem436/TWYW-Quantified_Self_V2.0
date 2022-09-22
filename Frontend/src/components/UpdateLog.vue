@@ -120,7 +120,7 @@
         <div class="row m-3 ">
           <div class="col d-flex justify-content-center">
             <button
-              class="btn btn-outine-info"
+              class="btn btn-outline-info"
               type="submit"
               name="button"
               @click="postlog"

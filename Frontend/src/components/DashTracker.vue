@@ -129,7 +129,14 @@
             />
           </div>
           <div class="form-check form-switch">
-            <label class="form-check-label" for="eorw">Email/Webhook</label
+            <label class="form-check-label" for="eorw"
+              ><input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                name="eorw"
+                v-model="eorw"
+              />Email/Webhook</label
             ><button
               class="h6 mx-2 p-1 btn btn-outline-danger"
               type="button"
@@ -138,13 +145,6 @@
             >
               Test now
             </button>
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              name="eorw"
-              v-model="eorw"
-            />
           </div>
           <div class="d-flex" v-if="eorw">
             <label for="webhook">Webhook:</label>
