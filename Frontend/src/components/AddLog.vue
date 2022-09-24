@@ -310,27 +310,6 @@ export default {
       this.refresh();
     }
   }
-  // watch: {
-  //   get_trackers: function() {
-  //     this.$nextTick(() => {
-  //       let sel = document.getElementById("sel_trk").options;
-  //       // console.log(this.rtracker_id);
-  //       if (sel.length > 0 && this.rtracker_id != "")
-  //         for (let t of sel) {
-  //           console.log(
-  //             "t tracker_id:" +
-  //               typeof t._value.tracker_id +
-  //               typeof this.rtracker_id
-  //           );
-  //           if (t._value.tracker_id == this.rtracker_id) {
-  //             document.getElementById("sel_trk").value = t._value;
-  //             console.log(document.getElementById("sel_trk").value);
-  //           }
-  //         }
-  //       console.log(sel);
-  //     });
-  //   }
-  // }
 };
 </script>
 

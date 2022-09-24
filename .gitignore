@@ -2,4 +2,6 @@
 *.tmp
 .env/*
 /Backend/.env/*
-Backend/__pycache__
+Backend/__pycache__/*
+Backend/application/__pycache__/*
+Frontend/dist/*

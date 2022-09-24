@@ -142,9 +142,9 @@ export default {
           .then(response => {
             // console.log(response)
             if (response.ok && !response.redirected) {
-              alert("Deleted");
               this.$store.commit("delete_trackers");
               this.trackers = this.$store.state.trackers;
+              alert("Deleted");
               this.refresh();
             } else {
               throw {

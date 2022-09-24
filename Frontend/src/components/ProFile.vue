@@ -229,7 +229,7 @@ export default {
             }
           })
           .then(function(data) {
-            console.log(data);
+            // console.log(data);
             self.$cookies.set(
               "user",
               self.$Ciphers.encode(
@@ -286,7 +286,7 @@ export default {
             }
           })
           .then(() => {
-            console.log(self);
+            // console.log(self);
             self.$cookies.remove("user");
             alert("Deleted");
             self.$router.push("/dashboard");

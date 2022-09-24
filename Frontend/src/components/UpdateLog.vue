@@ -39,7 +39,14 @@
               id="log_datetime"
               :value="log.log_datetime | date_format"
             />
-            <button type="button" name="button" @click="update_dt">@</button>
+            <button
+              class="btn btn-outline-info"
+              type="button"
+              name="button"
+              @click="update_dt"
+            >
+              @
+            </button>
           </div>
         </div>
         <!-- ############# -->
@@ -83,8 +90,20 @@
           </div>
           <div class="col-6">
             <input id="log_val" type="text" :value="log.log_value" />
-            <button id="start" @click="stopwatch().start()">Start</button>
-            <button id="reset" @click="stopwatch().reset()">Reset</button>
+            <button
+              class="btn btn-outline-danger"
+              id="start"
+              @click="stopwatch().start()"
+            >
+              Start
+            </button>
+            <button
+              class="btn btn-outline-danger"
+              id="reset"
+              @click="stopwatch().reset()"
+            >
+              Reset
+            </button>
           </div>
         </div>
 
@@ -120,7 +139,7 @@
         <div class="row m-3 ">
           <div class="col d-flex justify-content-center">
             <button
-              class="btn btn-outline-info"
+              class="btn btn-outline-secondary"
               type="submit"
               name="button"
               @click="postlog"

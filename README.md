@@ -24,7 +24,10 @@
 ### Vue Frontend app:
 * Open terminal with `Frontend` directory and run command `vue serve` or `npm run serve`
 
+####project documentation
+[link](https://docs.google.com/document/d/1pJaGoxt3blLhWvhcVpr5HJ32OYuVFNUU/edit?usp=sharing&ouid=116268192579584036744&rtpof=true&sd=true)
+
 ####credits to external sources for this project:
 * iconpacks.com for icons svg.
 * july.py for heatmap library
-* 
+*

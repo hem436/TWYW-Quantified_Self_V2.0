@@ -300,7 +300,7 @@ export default {
           }
         })
         .then(data => {
-          console.log(data);
+          // console.log(data);
           this.current_s = data;
           this.s_option = data.args[1];
           this.sw = data.enabled;

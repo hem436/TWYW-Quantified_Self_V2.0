@@ -74,7 +74,7 @@ export default {
           username: this.username,
           password: this.password
         };
-        console.log("going to login");
+        // console.log("going to login");
         fetch(process.env.VUE_APP_BACKEND_URL + "api/login", {
           method: "POST",
           credentials: "include",
@@ -107,7 +107,7 @@ export default {
           })
           .catch(error => {
             console.log(error.status);
-            alert(error.statusText);
+            alert("Incorrect username or password");
           });
       } else {
         alert("Invalid username or password");

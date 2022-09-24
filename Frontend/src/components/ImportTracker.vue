@@ -23,7 +23,7 @@
         </div>
 
         <div class="row m-3">
-          <div class="col-8 offset-2">
+          <div class="col-sm-8 offset-sm-2">
             <img
               class="img img-fluid"
               src="../../public/img/tracker_fields.jpg"
@@ -79,13 +79,11 @@ export default {
         this.validate = false;
         let file = await file_input.files[0].text();
 
-        console.log(file);
         let arr = file
           .split("\r\n")
           .map(a => a.replaceAll('"', "").split(","))
           .slice(1, -3);
 
-        console.log(arr);
         this.addtracker(arr);
       }
 
@@ -100,7 +98,7 @@ export default {
       } else if (obj[2][1].length == 0) {
         this.csv_data = "Select correct tracker type";
         return;
-      } else if (obj[2][1] == "Multiple-choice" && obj[3][1].length <= 1) {
+      } else if (obj[2][1] == "Multiple-choice" && obj[3].length <= 1) {
         this.csv_data = "options should be more than 1";
         return;
       } else {
@@ -112,7 +110,7 @@ export default {
         tracker_name: obj[0][1],
         tracker_description: obj[1][1],
         tracker_type: obj[2][1],
-        settings: obj[3][1]
+        settings: obj[3].slice(1).join()
       };
       console.log(data);
       fetch(process.env.VUE_APP_BACKEND_URL + "api/tracker", {
@@ -142,7 +140,7 @@ export default {
           }
         })
         .catch(rej => {
-          console.log(rej);
+          alert(rej.error);
           console.log(rej.error + " kindly re-login");
           return;
         });
@@ -154,7 +152,6 @@ export default {
         this.validate = true;
         document.getElementById("import").disabled = false;
       } else {
-        console.log("else executed");
         this.csv_data = "Please select a correct csv file";
       }
     }

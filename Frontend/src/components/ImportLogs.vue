@@ -23,7 +23,7 @@
         </div>
 
         <div class="row m-3">
-          <div class="col-8 offset-2">
+          <div class="col-sm-8 offset-sm-2">
             <img
               class="img img-fluid"
               src="../../public/img/log_fields.png"
@@ -58,7 +58,11 @@
             </button>
           </div>
         </div>
-        <div class="content">
+        <div
+          class="h6"
+          align="center"
+          style="font-family: zillaslab,palatino,Palatino Linotype,serif; color:red;"
+        >
           {{ csv_data }}
         </div>
       </div>
@@ -80,8 +84,6 @@ export default {
       if (this.validate) {
         this.validate = false;
         let file = await file_input.files[0].text();
-
-        console.log(file);
         let arr = file
           .split("\n")
           .map(a =>
@@ -91,19 +93,20 @@ export default {
               .split(",")
           )
           .slice(1);
-        console.log(file.split("\n"));
+        console.log(arr);
         arr.forEach(item => {
-          console.log("item");
-          console.log(item);
-          this.addlog(item);
+          if (item.length > 0) {
+            this.addlog(item);
+          }
         });
       }
 
       //-------------data----------------
     },
     addlog: async function(obj) {
-      if (obj.len == 0) {
-        console.log("no fields available");
+      if (obj.length < 5) {
+        this.csv_data = "Incorrect fields";
+        console.log("Incorrect fields :" + obj);
         return;
       }
       let tid = obj[4];
@@ -175,8 +178,7 @@ export default {
       })
         .then(response => {
           if (response.ok && !response.redirected) {
-            this.csv_data = "Logged";
-            console.log("Logged");
+            this.csv_data = "Logging...";
           } else {
             throw {
               e_code: response.status,
@@ -187,7 +189,7 @@ export default {
         .catch(rej => {
           console.log(rej);
           console.log(rej.error + " kindly re-login");
-          this.$router.go("/");
+          alert("Error:" + rej);
         });
     },
     check() {

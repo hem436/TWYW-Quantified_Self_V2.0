@@ -92,8 +92,8 @@ export default {
           password: this.password,
           email: this.email
         };
-        console.log("going to signup");
-        let response = fetch(process.env.VUE_APP_BACKEND_URL + "api/user", {
+        // console.log("going to signup");
+        fetch(process.env.VUE_APP_BACKEND_URL + "api/user", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -121,10 +121,10 @@ export default {
               )
             );
             self.$store.commit("login", data);
-            self.$router.push("/dashboard");
+            self.$router.push("/login");
           })
           .catch(error => console.log(error));
-        console.log(response);
+        // console.log(response);
       } else {
         alert("Invalid username or password");
       }
