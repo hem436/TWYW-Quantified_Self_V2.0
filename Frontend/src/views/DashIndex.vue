@@ -25,13 +25,28 @@
               <div class="collapse show" id="dashboard-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                   <li>
-                    <router-link to="/dashboard">Overview</router-link>
+                    <router-link to="/dashboard"
+                      ><span
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sidebarMenu"
+                        aria-expanded="true"
+                      >
+                        Overview
+                      </span></router-link
+                    >
                   </li>
                   <!-- <li>
                     <a href="#" class="link-dark rounded">Activity</a>
                   </li> -->
                   <li>
-                    <router-link to="/report">Reports</router-link>
+                    <router-link to="/report"
+                      ><span
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sidebarMenu"
+                        aria-expanded="true"
+                        >Reports</span
+                      ></router-link
+                    >
                   </li>
                 </ul>
               </div>
@@ -48,11 +63,25 @@
               <div class="collapse show" id="tracker-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                   <li>
-                    <router-link to="/tracker/add">New</router-link>
+                    <router-link to="/tracker/add"
+                      ><span
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sidebarMenu"
+                        aria-expanded="true"
+                        >New</span
+                      ></router-link
+                    >
                   </li>
 
                   <li>
-                    <router-link to="/import/tracker">Import</router-link>
+                    <router-link to="/import/tracker"
+                      ><span
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sidebarMenu"
+                        aria-expanded="true"
+                        >Import</span
+                      ></router-link
+                    >
                   </li>
                   <!-- <li><a href="#" class="link-dark rounded">Generate report</a></li> -->
                 </ul>
@@ -71,12 +100,25 @@
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                   <li>
                     <router-link to="/log/add" class="link-dark rounded">
-                      New
+                      <span
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sidebarMenu"
+                        aria-expanded="true"
+                      >
+                        New</span
+                      >
                     </router-link>
                   </li>
 
                   <li>
-                    <router-link to="/import/log">Import</router-link>
+                    <router-link to="/import/log"
+                      ><span
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sidebarMenu"
+                        aria-expanded="true"
+                        >Import</span
+                      ></router-link
+                    >
                   </li>
                   <!-- <li><a href="#" class="link-dark rounded">Generate report</a></li> -->
                 </ul>
@@ -98,7 +140,14 @@
                     <router-link to="/signup"> New...</router-link>
                   </li>
                   <li>
-                    <router-link to="/profile"> Profile</router-link>
+                    <router-link to="/profile">
+                      <span
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sidebarMenu"
+                        aria-expanded="true"
+                        >Profile</span
+                      ></router-link
+                    >
                   </li>
                   <li>
                     <a @click="signout" class="link-dark rounded">Sign out</a>
@@ -203,6 +252,11 @@ main {
 a {
   color: #000000;
   text-decoration: none;
+}
+@media screen and (min-width: 770px) {
+  .sidebar {
+    transition: none;
+  }
 }
 .error {
   font-family: zillaslab, palatino, Palatino Linotype, serif;

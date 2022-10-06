@@ -261,7 +261,7 @@ def gen_report(id,s=""):
         else:
             duration.append(datetime(duration[0].year, duration[0].month + 1, 1) + timedelta(days=-1))
     elif s=="Every year":
-        duration=[datetime.now().replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0),datetime.now().replace(month=12,day=31,hour=23,minute=59,second=59,microsecond=0)]
+        duration=[datetime(year=datetime.now().year-1,month=1,day=1,hour=0,minute=0,second=0,microsecond=0),datetime(year=datetime.now().year-1,month=12,day=31,hour=23,minute=59,second=59,microsecond=0)]
 
     try:
         dates = july.utils.date_range(duration[0],duration[1])
